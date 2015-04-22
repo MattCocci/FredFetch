@@ -5,9 +5,6 @@
 % Required Arguments:
 % - api         api key from FRED website
 % - series      Fred/Alfred series code to pull
-% - saving      What to save the file as (this could be constructed within this
-%               file, but it is instead passed as an argument so we can
-%               parallelize)
 % - vint_date   Which vintage date to pull the series for. Is a matlab detenum
 % - frequency   Frequency of the data (typically, this will also be reflected
 %               in the saving name so we can pull the same series at multiple
@@ -19,21 +16,24 @@
 %   - b           bi-weekly
 %   - w           weekly
 %   - d           daily
+% - saving      What to save the file as (this could be constructed within this
+%               file, but it is instead passed as an argument so we can
+%               parallelize)
 %
 % Notes:
 % - This program requires that you add the jsonlab location to your path prior
 %   to calling this function.
-% - FRED/ALFRED query will return the data in json format. That is then written
-%   to a file so it can be read in by jsonlab. After readin in as json and
-%   converted to a struct by jsonlab, the data is reshaped to be a matrix of
-%   dates and values, which then replaces the json file.
+% - FRED/ALFRED query will return the data in json format. The data is
+%   reshaped to be a matrix of dates and values that is then written
+%   to a file .
 % - If you try to pull quarterly data at a monthly frequency, the Fred API
 %   throws an error. So at this step, we will specify monthly
 %   frequency if possible, or the otherwise lowest native frequency if not
 %   possible, letting downstream programs deal with any spacing and frequency
 %   mismatch issues (like align_vintdata.m)
 %
-function [ pseudo_vint, success ] = fetch_single_singlevint(api, series, saving, frequency, vint_date, varargin)
+function [ pseudo_vint, success ] = ...
+  fetch_single_singlevint(api, series, saving, frequency, vint_date, varargin)
 
   if nargin > 5
     path_dep = varargin{1};
