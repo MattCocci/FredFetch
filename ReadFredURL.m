@@ -1,4 +1,17 @@
-function [returned, success] = ReadFredURL(url, max_attempt)
+%% ReadFredURL.m
+%
+% This function is the most general "Get/Read something from FRED"
+% function. Most other functions that get data from FRED are actually
+% just tailored wrappers of this guy.
+%
+% Behavior:
+% ---------
+% - Accepts a URL
+% - Try at most max_attempt times to download that URL
+% - Return either the error message or the URL contents (which are json)
+%   in a struct
+%
+function [returned, success] = ReadFredURL(url, json, max_attempt)
 
   %% Get max attempt if not set
   if ~exist('max_attempt', 'var')
@@ -8,11 +21,15 @@ function [returned, success] = ReadFredURL(url, max_attempt)
 
   %% Try max_attempt times to download; if error, return error
   try
-    returned = loadjson(urlread(url));
+    if json
+      returned = loadjson(urlread(url));
+    else
+      returned = urlread(url);
+    end
     success  = 1;
   catch
     if max_attempt - 1
-      [returned, success] = ReadFredURL(url, max_attempt-1);
+      [returned, success] = ReadFredURL(url, json, max_attempt-1);
       return
     else
       returned = lasterror();

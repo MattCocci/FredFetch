@@ -1,28 +1,25 @@
-function [vintdata] = vint_single(series, vint_date, varargin)
+function [vintdata] = vint_single(series, vint_date, verbose_errors, varargin)
 
-  %% Grab the data
-  flds = {'info'; 'obs'};
-  for f = 1:length(flds)
-    data.(flds{f}) = ReadFredURL(MakeFredURL(flds{f}, 'series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:}));
-  end
+  %% Try to grab the data
+  [query, success] = ReadFredData(verbose_errors, 'series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
 
-  %% Check that it downloaded
-  if isfield(data.obs, 'url')
-    error(sprintf('Could not download data using link\n\n\t%s\n', data.obs.url))
-  end
-  if isfield(data.info, 'url')
-    error(sprintf('Could not retrieve series info using link\n\n\t%s\n', data.info.url))
+  %% Return on errors
+  if ~success
+    vintdata.info  = query;
+    vintdata.date  = [];
+    vintdata.value = [];
+    return
   end
 
   %% Parse the data
-  vintdata.info  = data.info.seriess{:};
-  data.obs       = vertcat(data.obs.observations{:});
-  nobs           = length(data.obs);
-  vintdata.date  = nan(nobs,1);
-  vintdata.value = nan(nobs,1);
-  for t = 1:nobs
-    vintdata.date(t) = datenum(data.obs(t).date, 'yyyy-mm-dd');
-    val = str2num(data.obs(t).value);
+  vintdata.info  = query.info.seriess{:};
+  obs            = vertcat(query.obs.observations{:});
+  Nobs           = length(obs);
+  vintdata.date  = nan(Nobs,1);
+  vintdata.value = nan(Nobs,1);
+  for t = 1:Nobs
+    vintdata.date(t) = datenum(obs(t).date, 'yyyy-mm-dd');
+    val = str2num(obs(t).value);
     if ~isempty(val)
       vintdata.value(t) = val;
     end
