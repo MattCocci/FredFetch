@@ -1,25 +1,79 @@
-High-Level functions
+## FredFetch
 
-% For fetching single and multiple series; return struct with Fred Data
-vint(opt, series, vintdate, varargin)
+For fetching the latest and vintage data from Fred/Alfred.
 
-fred.vintages(series, vintsart, vintend, obstart, obsend)   to get all vintages of a dataset
-fred.writecsv({series}, vintdate, obstart, obsend)
-fred.vintdates(series)
-fred.first\_release(series, obstart, obsend)
+## Using This Package
+
+Clone this to somewhere in your path. As this is a Matlab package, all
+functions should be called as `fred.fcn_name`, with the `fred.` prefix.
+
+### Fetching the Latest Data
+
+This is the simplest case, when you want to quickly import into Matlab
+the latest data for one or many series. Examples:
+
+- `fred.latest('GDPC1')`: Fetch the series GDPC1. Return in struct with
+  dates and information/notes about the series.
+- `fred.latest({'GDPC1', 'PAYEMS', 'NAPM'})`: Fetch multiple series at
+  once, including data with different frequencies. The returned struct
+  will have info, a matrix of aligned data for the requested series, and
+  a common date vector.
+
+All data is in the native Fred frequency.
+
+The real advantage of `fred.latest` is that it's snappy. Though you
+could download these data using the vintage functions below (with the
+vintage date simply set to today's date), the returned json results from
+the Fred API need to be parsed, which is slower. Not terribly slow, but
+`fred.latest` is on the order of a second (or less) per series, so it's
+preferred.
 
 
-opt = (api); % Test connection
-fred.vint(opt, {series}, vintdate, obs\_start, obs\_end)      to return a data table with many series properly spaced
-fred.vintsall(series, vintsart, vintend, obstart, obsend)   to get all vintages of a dataset
-fred.csv({series}, vintdate, obstart, obsend)
-fred.xls({series}, vintdate, obstart, obsend)
-fred.getvints(series)
-fred.first\_release(series, obstart, obsend)
+### Fetching Vintage Data
 
-ToDo
-- Fetching of first, second, third releases robust to no revisions.
-  Return Tx3 vector
-- Vintage history for a series: Single series across multiple vintages
+#### Main Usage
 
-vint(api, series, vint_date, varargin)
+To fetch the data that would have existed at a certain date, run
+
+- `fred.vint('GDPC1', '2001-01-01')`: For a single series.
+- `fred.vint({'GDPC1', 'PAYEMS', 'NAPM'}, '2001-01-01')`: For multiple series.
+- `fred.vintall('GDPC1')`: All vintages of a given series. Observation
+  dates along the rows, unique vintage dates along the columns of
+  returned data matrix.
+
+#### Advanced Usage
+
+All of the above vintage functions accept additional arguments that can
+enter the request URL, if you would like to take advantage of Fred's API
+features. These additional arguments should take the exact form of the
+Fred API key and value combinations. In this way, this package thinly
+wraps the Fred API.
+
+Example:
+
+```
+  fred.vint('GDPC1', '2001-01-01', 'observation_start', '1991-03-14', 'observation_end', '2000-03-14')
+```
+
+Again, you can supply any number of additional Fred API that arguments you want,
+provided they are not one of the following fields (which are set by the
+series and vintage date arguments):
+
+- `series`
+- `realtime_start`
+- `realtime_end`
+
+See the Fred API documentation for more details on what you can provide.
+
+
+#### Vintage Availability
+
+Note that before 1990s, you won't have much (if any) luck pulling
+vintage data. And before the 2000s, it will also be slim pickings.
+
+To help, series without any data for the requested vintage date will be
+an all-`NaN` column in the returned data matrix. That way, if you're
+looping over vintage dates and downloading data for multiple series, the
+size of the data matrix isn't changing with vintage availability.
+
+
