@@ -1,11 +1,17 @@
-## FredFetch
+# FredFetch
 
 For fetching the latest and vintage data from Fred/Alfred.
 
-## Using This Package
+## Setup
 
-Clone this to somewhere in your path. As this is a Matlab package, all
-functions should be called as `fred.fcn_name`, with the `fred.` prefix.
+Three steps:
+
+1. Clone this repo somewhere, and add that somewhere to your Matlab path.
+
+2. Go into `+fred/GlobalOptions.m` and supply an API key.
+
+3. As this is a Matlab package, call functions with a `fred.` prefix.
+   Example `fred.latest('GDPC1')`
 
 ### Fetching the Latest Data
 
@@ -16,10 +22,10 @@ the latest data for one or many series. Examples:
   dates and information/notes about the series.
 - `fred.latest({'GDPC1', 'PAYEMS', 'NAPM'})`: Fetch multiple series at
   once, including data with different frequencies. The returned struct
-  will have info, a matrix of aligned data for the requested series, and
-  a common date vector.
+  will have info, a single matrix of aligned data, and a common date
+  vector.
 
-All data is in the native Fred frequency.
+All data are in the native Fred frequency, in levels.
 
 The real advantage of `fred.latest` is that it's snappy. Though you
 could download these data using the vintage functions below (with the
@@ -44,10 +50,10 @@ To fetch the data that would have existed at a certain date, run
 #### Advanced Usage
 
 All of the above vintage functions accept additional arguments that can
-enter the request URL, if you would like to take advantage of Fred's API
-features. These additional arguments should take the exact form of the
-Fred API key and value combinations. In this way, this package thinly
-wraps the Fred API.
+enter the query URL if you would like to take advantage of Fred's API
+features. These optional arguments should take the exact form of Fred
+API key and value combinations. In this way, this package acts as a thin
+wrapper for the fully-featured Fred API.
 
 Example:
 
@@ -64,6 +70,10 @@ series and vintage date arguments):
 - `realtime_end`
 
 See the Fred API documentation for more details on what you can provide.
+
+Note that currently, if requesting many series, the optional arguments
+provided will be _identical_ across each request. On the to-do list:
+accepting cells that can be iterated over as we iterate over series.
 
 
 #### Vintage Availability
