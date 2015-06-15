@@ -1,7 +1,7 @@
 function [data] = latest_single(series)
 
   url = sprintf('http://research.stlouisfed.org/fred2/data/%s.txt', series);
-  [query, success] = ReadFredURL(url, 0);
+  [query, success] = fred.ReadFredURL(url, 0);
   if ~success
     data.info = returned;
     data.date = [];

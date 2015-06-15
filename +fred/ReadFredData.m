@@ -8,7 +8,7 @@ function [returned, success] = ReadFredData(verbose_errors, varargin)
   %% Try to grab the data
   flds = {'info'; 'obs'};
   for n = 1:length(flds)
-    [query.(flds{n}), success] = ReadFredURL(MakeFredURL(flds{n}, varargin{:}));
+    [query.(flds{n}), success] = fred.ReadFredURL(fred.MakeFredURL(flds{n}, varargin{:}), 1);
 
     % Check that there were no errors
     if ~success

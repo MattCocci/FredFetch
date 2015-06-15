@@ -31,13 +31,13 @@ function [vintdata] = vint(series, vint_date, varargin)
   % Dispatch the call to different function depending upon whether one
   % or multiple series are specified
   if isstr(series)
-    vintdata = vint_single(1, series, vint_date, varargin{:});
+    vintdata = fred.vint_single(series, vint_date, 1, varargin{:});
 
   elseif length(series) == 1
-    vintdata = vint_single(series{1}, vint_date, 1, varargin{:});
+    vintdata = fred.vint_single(series{1}, vint_date, 1, varargin{:});
 
   else
-    vintdata = multiple(@vint_single, series, vint_date, 0, varargin{:});
+    vintdata = fred.multiple(@fred.vint_single, series, vint_date, 0, varargin{:});
   end
 
 

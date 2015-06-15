@@ -1,7 +1,7 @@
 function [url] = MakeFredURL(urltype, varargin)
 
   %% Get global options
-  opt = GlobalOptions();
+  opt = fred.GlobalOptions();
 
   %% Start of URL
   %  This is specific to the type of pull you want to
