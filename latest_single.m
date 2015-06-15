@@ -47,5 +47,6 @@ function [data] = latest_single(series)
   data.date   = datenum(date_value{1}, 'yyyy-mm-dd');
   data.value  = date_value{2};
 
+
 end
 
