@@ -1,7 +1,7 @@
 function [vintdata] = vint_single(series, vint_date, verbose_errors, varargin)
 
   %% Try to grab the data
-  [query, success] = ReadFredData(verbose_errors, 'series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
+  [query, success] = fred.ReadFredData(verbose_errors, 'series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
 
   %% Return on errors
   if ~success

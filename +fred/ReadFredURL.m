@@ -15,21 +15,21 @@ function [returned, success] = ReadFredURL(url, json, max_attempt)
 
   %% Get max attempt if not set
   if ~exist('max_attempt', 'var')
-    opt = GlobalOptions();
+    opt = fred.GlobalOptions();
     max_attempt = opt.max_attempt;
   end
 
   %% Try max_attempt times to download; if error, return error
   try
     if json
-      returned = loadjson(urlread(url));
+      returned = fred.jsonlab.loadjson(urlread(url));
     else
       returned = urlread(url);
     end
     success  = 1;
   catch
     if max_attempt - 1
-      [returned, success] = ReadFredURL(url, json, max_attempt-1);
+      [returned, success] = fred.ReadFredURL(url, json, max_attempt-1);
       return
     else
       returned = lasterror();
