@@ -1,6 +1,8 @@
 # FredFetch
 
-For fetching the latest and vintage data from Fred/Alfred.
+For fetching the latest and vintage data from
+[Fred](http://research.stlouisfed.org/fred2/) and
+[Alfred](https://alfred.stlouisfed.org/).
 
 ## Setup
 
@@ -8,7 +10,8 @@ Three steps:
 
 1. Clone this repo somewhere, and add that somewhere to your Matlab path.
 
-2. Go into `+fred/GlobalOptions.m` and supply an API key.
+2. Go into `+fred/GlobalOptions.m` and supply an API key (see [Fred
+   website](http://api.stlouisfed.org/api_key.html) to get one.
 
 3. As this is a Matlab package, call functions with a `fred.` prefix.
    Example `fred.latest('GDPC1')`
@@ -69,7 +72,8 @@ series and vintage date arguments):
 - `realtime_start`
 - `realtime_end`
 
-See the Fred API documentation for more details on what you can provide.
+See the [Fred API documentation](http://api.stlouisfed.org/docs/fred/)
+for more details on what you can provide.
 
 Note that currently, if requesting many series, the optional arguments
 provided will be _identical_ across each request. On the to-do list:
