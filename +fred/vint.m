@@ -24,6 +24,15 @@
 %
 function [vintdata] = vint(series, vint_date, varargin)
 
+  % Set toDataset argument (whether to merge the things into a dataset,
+  % default yes)
+  if nargin > 2 && isnumeric(varargin{1})
+    toDataset = varargin{1};
+    varargin  = varargin(2:end);
+  else
+    toDataset = 1;
+  end
+
   if datenum(vint_date) < datenum(1991,1,1)
     warning('Early vintage date; data might not exist, error likely.')
   end
@@ -37,7 +46,7 @@ function [vintdata] = vint(series, vint_date, varargin)
     vintdata = fred.vint_single(series{1}, vint_date, 1, varargin{:});
 
   else
-    vintdata = fred.multiple_(@fred.vint_single, series, vint_date, 0, varargin{:});
+    vintdata = fred.multiple_(@fred.vint_single, toDataset, series, vint_date, 0, varargin{:});
   end
 
 
