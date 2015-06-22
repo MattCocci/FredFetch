@@ -22,7 +22,7 @@ function [returned, success] = ReadFredURL(url, json, max_attempt)
   %% Try max_attempt times to download; if error, return error
   try
     if json
-      returned = fred.jsonlab.loadjson(urlread(url));
+      returned = jsonlab.loadjson(urlread(url));
     else
       returned = urlread(url);
     end
