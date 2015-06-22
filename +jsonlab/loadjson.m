@@ -58,7 +58,7 @@ arraytoken=sort([arraytoken escquote]);
 esc = find(inStr=='"' | inStr=='\' ); % comparable to: regexp(inStr, '["\\]');
 index_esc = 1; len_esc = length(esc);
 
-opt=fred.jsonlab.varargin2struct(varargin{:});
+opt=jsonlab.varargin2struct(varargin{:});
 jsoncount=1;
 while pos <= len
     switch(next_char)
@@ -259,11 +259,11 @@ global pos inStr isoct
          end
         end
     end
-    if(fred.jsonlab.jsonopt('SimplifyCell',0,varargin{:})==1)
+    if(jsonlab.jsonopt('SimplifyCell',0,varargin{:})==1)
       try
         oldobj=object;
         object=cell2mat(object')';
-        if(iscell(oldobj) && isstruct(object) && numel(object)>1 && fred.jsonlab.jsonopt('SimplifyCellArray',1,varargin{:})==0)
+        if(iscell(oldobj) && isstruct(object) && numel(object)>1 && jsonlab.jsonopt('SimplifyCellArray',1,varargin{:})==0)
             object=oldobj;
         elseif(size(object,1)>1 && ndims(object)==2)
             object=object';

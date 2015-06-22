@@ -37,7 +37,7 @@ function [vintdata] = vint(series, vint_date, varargin)
     vintdata = fred.vint_single(series{1}, vint_date, 1, varargin{:});
 
   else
-    vintdata = fred.multiple(@fred.vint_single, series, vint_date, 0, varargin{:});
+    vintdata = fred.multiple_(@fred.vint_single, series, vint_date, 0, varargin{:});
   end
 
 

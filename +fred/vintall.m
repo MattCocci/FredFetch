@@ -10,10 +10,11 @@ function [vintdata] = vintall(series, varargin)
 
   %% Return on errors
   if ~success
-    vintdata.info   = query;
-    vintdata.series = series;
-    vintdata.date   = [];
-    vintdata.value  = [];
+    vintdata.info     = query;
+    vintdata.series   = series;
+    vintdata.date     = [];
+    vintdata.realtime = [];
+    vintdata.value    = [];
     return
   end
   fprintf('done\n');
@@ -38,7 +39,7 @@ function [vintdata] = vintall(series, varargin)
 
   %% Define a field for all realtime dates
 
-  realtimes = unique([unq.realtime_start; unq.realtime_end]);
+  realtime = unique([unq.realtime_start; unq.realtime_end]);
     % Note: Used to fill the data matrix by looping over observations
     % (looping over rows) and filling the data from realtime start to
     % realtime start (filling left to right, overwriting vintage dates)
@@ -61,9 +62,9 @@ function [vintdata] = vintall(series, varargin)
 
     % Set up vintdata structure that will hold everything
     vintdata.date     = unq.date;
-    vintdata.realtime = realtimes;
+    vintdata.realtime = realtime;
     Nobs  = length(vintdata.date);
-    Nvint = length(vintdata.realtimes);
+    Nvint = length(vintdata.realtime);
     vintdata.value = nan(Nobs, Nvint);
 
     % Loop over vintdates
@@ -73,7 +74,7 @@ function [vintdata] = vintall(series, varargin)
     for n = 1:Nvint
 
       % Indices within "all" that are relevant for this vintage date
-      match = find((realtimes(n) >= all.realtime_start) .* (realtimes(n) <= all.realtime_end));
+      match = find((realtime(n) >= all.realtime_start) .* (realtime(n) <= all.realtime_end));
 
       % If match for this vintage data is exactly the same as the last,
       % mark column for delection and move on

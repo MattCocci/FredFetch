@@ -12,7 +12,7 @@ function [data] = latest(series)
     data = fred.latest_single(series{1});
 
   else
-    data = fred.multiple(@fred.latest_single, series);
+    data = fred.multiple_(@fred.latest_single, series);
   end
 
 end
