@@ -15,7 +15,7 @@ function [data] = multiple_(dl_fcn, toDataset, series, varargin)
     data.info      = cellfun(@(s) s.info, individual, 'un', 0);
     data.series    = cellfun(@upper, series, 'un', 0);
     data.frequency = repmat({''},Nseries,1);
-    data.frequency(not_empty) = cellfun(@(s) s.info.frequency, individual(not_empty), 'un', 0);
+    data.frequency(not_empty) = cellfun(@(s) s.info.frequency_short, individual(not_empty), 'un', 0);
 
     % Align the vintage datasets
     alldates       = cellfun(@(s) s.date, individual(not_empty), 'un', 0);

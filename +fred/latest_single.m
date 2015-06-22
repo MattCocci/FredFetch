@@ -36,6 +36,7 @@ function [data] = latest_single(series)
     end
     info.(storeas{n}) = strtrim(info_str(start:stop));
   end
+  info.frequency_short = info.frequency(1);
 
 
   %% Parse the data

@@ -18,12 +18,12 @@ function [ release_dates ] = ...
     obs_dates     = cellfun(@(obs) datenum(obs.date), from_fred.observations)';
     obs_dates     = arrayfun(@(dt) addtodate(dt, 2, 'month'), obs_dates); % Add 2 months so the obs dates is the first day of the last month in the quarter
     release_dates = cellfun(@(obs) datenum(obs.realtime_start), from_fred.observations)';
-    
+
     if nargin > 5
       saving = varargin{1};
       f = fopen([saving series{s} '.txt'], 'w');
       fprintf(f, 'obs_date\trelease_date\n');
-      arrayfun(@(row) fprintf(f, '%9.0f\t%9.0f\n', obs_dates(row), release_dates(row)), 1:length(obs_dates)); 
+      arrayfun(@(row) fprintf(f, '%9.0f\t%9.0f\n', obs_dates(row), release_dates(row)), 1:length(obs_dates));
       fclose(f);
     end
   end
