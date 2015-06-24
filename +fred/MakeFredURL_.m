@@ -1,4 +1,4 @@
-function [url] = MakeFredURL(urltype, varargin)
+function [url] = MakeFredURL_(urltype, varargin)
 
   %% Get global options
   opt = fred.GlobalOptions();

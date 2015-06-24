@@ -1,12 +1,12 @@
-function [vintdata] = vintrange_single(series, realtime_start, realtime_end, varargin)
+function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
 
   series = upper(series);
   realtime_start = datestr(realtime_start, 'yyyy-mm-dd');
   realtime_end   = datestr(realtime_end, 'yyyy-mm-dd');
 
   %% Try to grab the data
-  fprintf('Downloading Fred Data...');
-  [query, success] = fred.ReadFredData(1, 'series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, varargin{:});
+  fprintf('Downloading Fred Data for %s...', series);
+  [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, varargin{:});
 
   %% Return on errors
   if ~success

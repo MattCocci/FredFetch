@@ -18,7 +18,7 @@ function [returned] = vints_fromAll(series, vintdates, pseudo, varargin)
     stop  = vintdates(end);
   end
 
-  vintall = fred.vintrange_single(series, start, stop, varargin{:});
+  vintall = fred.vintrange(series, start, stop, varargin{:});
 
   if pseudo
     publag  = fred.compute_publag(vintall.date, vintall.realtime, vintall.value);
