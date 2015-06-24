@@ -16,7 +16,7 @@ function [data] = latest(series, toDataset)
     data = fred.latest_single(series{1});
 
   else
-    data = fred.multiple_(@fred.latest_single, toDataset, series);
+    data = fred.multiple_series(@fred.latest_single, toDataset, series);
   end
 
 end

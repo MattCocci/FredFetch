@@ -1,4 +1,4 @@
-function [data] = multiple_(dl_fcn, toDataset, series, varargin)
+function [data] = multiple_series(dl_fcn, toDataset, series, varargin)
 
   % Download the series individually using dl_fcn
   Nseries    = length(series);

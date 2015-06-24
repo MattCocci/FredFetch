@@ -12,7 +12,9 @@ function [vintdata] = vintall(series, varargin)
     vintdata = fred.vintrange_single(series, very_first, very_last, varargin{:});
 
   else
-    vintdata = fred.multiple_(@fred.vintrange_single, 0, series, very_first, very_last, varargin{:});
+    vintdata = fred.multiple_series(@fred.vintrange_single, 0, series, very_first, very_last, varargin{:});
   end
 
+  % Add publication delays
+  vintdata.publag = fred.compute_publag(vintdata.date, vintdata.realtime, vintdata.value);
 end
