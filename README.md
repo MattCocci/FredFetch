@@ -8,6 +8,19 @@ The package aims to be simple enough for importing data quickly and
 interactively, while still having enough muscle to download many series
 over many vintage dates.
 
+## Table of Contents
+
+1. [Setup](#setup)
+2. [Basic Usage](#basic)
+  - [Fetching the Latest Data](#latest)
+  - [Fetching Vintage Data](#vintage)
+    - [Basic Examples](#vintexamples)
+    - [Pseudo-Vintages](#pseudo)
+    - [Parallel Calls](#parallel)
+3. [Additional Features](#features)
+4. [FredFetch as a Fred API Wrapper](#wrapper)
+
+<a name="setup"/>
 ## Setup
 
 Three steps:
@@ -20,6 +33,7 @@ Three steps:
 3. As this is a Matlab package, call functions with a `fred.` prefix.
    Example `fred.latest('GDPC1')`.
 
+<a name="basic"/>
 ## Basic Usage
 
 You really only need to interact with two functions:
@@ -48,6 +62,7 @@ percent changes, or differences). If you need to transform the data, see
 the function `fred.transform`.
 
 
+<a name="latest"/>
 ### Fetching the Latest Data
 
 This is the simplest case, when you want to quickly import into Matlab
@@ -69,9 +84,11 @@ the Fred API need to be parsed, which is slower. Not terribly slow, but
 preferred.
 
 
+<a name="vintage"/>
 ### Fetching Vintage Data
 
-#### Main Usage
+<a name="vintexamples"/>
+#### Basic Examples
 
 To fetch the data that would have existed at a certain date, run
 
@@ -94,6 +111,7 @@ correspond to different observation dates, while columns represent
 Should be clear from the function call and sizes of the returned
 information.
 
+<a name="pseudo"/>
 #### Pseudo-Vintages
 
 Most series do not have vintage data available at any arbitrary date.
@@ -117,8 +135,53 @@ This package will do exactly the method described above, using the
 median publication delay (computed over the entire available history of
 the series) to discard observations.
 
+<a name="parallel"/>
+#### Parallel Calls
 
-#### Advanced Usage
+When downloading vintages for many, many series, you might want to
+download in parallel. (The json parsing is the bottleneck, so if you're
+just running `fred.latest`, which doesn't use json, you problably don't
+need to worry about parallelizing, though you could.)
+
+To do this, simply add the following argument
+
+```
+  `fred.vint({'GDPC1', 'NAPM', 'PAYEMS'}, '1989-01-01', 'parworkers', Nworkers)
+```
+
+where `Nworkers` is the number of parallel workers you would like to
+use. The package will select the minimum of that and the number of
+series, so you could even set it to NaN or Inf if you would like.
+
+Note also that this will not conflict if you pass the optional `pseudo`
+key and value before or after. But any additional arguements that should
+be handed to the Fred API (like `observation_start` and it's value)
+should come last in the argument list.
+
+<a name="features"/>
+## Additional Features
+
+Here are some examples for the remaining user-oriented functions:
+
+- `fred.firstRelease('GDPC1')`: For all observation dates of `GDPC1`,
+  return the first release (rather than subsequent revisions or the
+  latest value).
+- `fred.firstRelease('GDPC1', 'units', 'pca')`: First releases of GDPC1
+  in percent-annualized units. Transformation done by `fred.transform`
+  (since passing this to the Fred API does not work, for some reason).
+- `getvints('GDPC1')`: Return available vintage dates for `GDPC1`.
+- `transform(X, tform, frqcy)`: Transform a series, where `tform` is a
+  string for the transformation type (same as Fred API conventions). If
+  `X` is a matrix of data, `tform` and `frqcy` should be cell arrays,
+  one entry for each column of `X`.
+
+The remaining non-user oriented functions have names ending with an
+underscore, like `latest_.m`.  Often, the user-oriented functions are
+just wrappers that parse the user's input and then call these underscore
+functions. You don't ever really need to worry about them.
+
+<a name="wrapper"/>
+## FredFetch as a Fred API Wrapper
 
 All of the above vintage functions accept additional arguments that can
 enter the query URL if you would like to take advantage of Fred's API
@@ -144,52 +207,8 @@ See the [Fred API documentation](http://api.stlouisfed.org/docs/fred/)
 for more details on what you can provide.
 
 Note that currently, if requesting many series, the optional arguments
-provided will be _identical_ across each request. On the to-do list:
-accepting cells that can be iterated over as we iterate over series.
-
-### Additional Functions
-
-Here are some examples for the remaining user-oriented functions:
-
-- `fred.firstRelease('GDPC1')`: For all observation dates of `GDPC1`,
-  return the first release (rather than subsequent revisions or the
-  latest value).
-- `fred.firstRelease('GDPC1', 'units', 'pca')`: First releases of GDPC1
-  in percent-annualized units. Transformation done by `fred.transform`
-  (since passing this to the Fred API does not work, for some reason).
-- `getvints('GDPC1')`: Return available vintage dates for `GDPC1`.
-- `transform(X, tform, frqcy)`: Transform a series, where `tform` is a
-  string for the transformation type (same as Fred API conventions). If
-  `X` is a matrix of data, `tform` and `frqcy` should be cell arrays,
-  one entry for each column of `X`.
-
-The remaining non-user oriented functions have names ending with an
-underscore, like `latest_.m`.  Often, the user-oriented functions are
-just wrappers that parse the user's input and then call these underscore
-functions. You don't ever really need to worry about them.
-
-
-### Parallel Calls
-
-When looping over many, many series, you might want to download and
-parse the data in parallel. Not that if you're just running
-`fred.latest`, you problably don't need to worry about parallelizing.
-But given many series, `fred.vint` is sufficiently slow (due to all of
-the json parsing) that you could benefit from parallelizing over series.
-
-To do this, simply add the following argument
-
-```
-  `fred.vint({'GDPC1', 'NAPM', 'PAYEMS'}, '1989-01-01', 'parworkers', Nworkers)
-```
-
-where `Nworkers` is the number of parallel workers you would like to
-use. The package will select the minimum of that and the number of
-series, so you could even set it to NaN or Inf if you would like.
-
-Note also that this will not conflict if you pass the optional `pseudo`
-key and value before or after. But any additional arguements that should
-be handed to the Fred API (like `observation_start` and it's value)
-should come last in the argument list.
+provided will be _identical_ across each request. Maybe on the to-do
+list: accepting cells that can be iterated over as we iterate over
+series.
 
 
