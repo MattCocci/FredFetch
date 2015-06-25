@@ -4,7 +4,7 @@ For fetching the latest and vintage data from
 [Fred](http://research.stlouisfed.org/fred2/) and
 [Alfred](https://alfred.stlouisfed.org/).
 
-The goal is a package simple enough to import data quickly and
+The package aims to be simple enough for importing data quickly and
 interactively, while still having enough muscle to download many series
 over many vintage dates.
 
@@ -31,7 +31,7 @@ Where `series` is a Fred series code (or cell of codes), and `vint` is a
 Matlab datenum or array of datenums (or, alternatively, cell and cell
 array of datestrings).
 
-Function calls will return structs with the following fields:
+Calls to these functions return structs with the following fields:
 
 - `info`: Detailed information about the series.
 - `series`: Series code
@@ -91,19 +91,21 @@ To fetch the data that would have existed at a certain date, run
 In general, within the `value` field of returned structure, rows
 correspond to different observation dates, while columns represent
 *either* different series or different vintage dates of the same series.
-Should be clear from the call and sizes of the returned information.
+Should be clear from the function call and sizes of the returned
+information.
 
 #### Pseudo-Vintages
 
-Sometimes, you cannot get true vintages for a certain date. For example,
-Fred does not have `GDPC1` vintages from before 1991. However, you would
-like to do the best you can and *simulate* the vintage.
+Most series do not have vintage data available at any arbitrary date.
+Often, you can only download vintage data after some specific date.  For
+example, Fred does not have `GDPC1` vintages from before 1991. However,
+you might like to do the best you can and *simulate* vintages.
 
-In particular, you might not have a 01-Jan-1989 `GDPC1` vintage, but you
+In particular, you might not have the 01-Jan-1989 `GDPC1` vintage, but you
 can take the first available vintage for the series from 12-Dec-1991,
 and chop off enough of the 1989 and 1990 releases to simulate
-publication lags and get an information set close to what you would have
-had at 01-Jan-1989.
+publication lags, constructing an information set close to what you
+*would have had* at 01-Jan-1989.
 
 To do this, simply run
 
@@ -114,6 +116,7 @@ To do this, simply run
 This package will do exactly the method described above, using the
 median publication delay (computed over the entire available history of
 the series) to discard observations.
+
 
 #### Advanced Usage
 
@@ -144,42 +147,26 @@ Note that currently, if requesting many series, the optional arguments
 provided will be _identical_ across each request. On the to-do list:
 accepting cells that can be iterated over as we iterate over series.
 
-#### Pseudo-Vintages
-
-Most series do not have vintage data available at any arbitrary date.
-Often, you can only download vintage data after some specific date.  For
-example, Fred does not have `GDPC1` vintages from before 1991. However,
-you might like to do the best you can and *simulate* vintages.
-
-In particular, you might not have the 01-Jan-1989 `GDPC1` vintage, but you
-can take the first available vintage for the series from 12-Dec-1991,
-and chop off enough of the 1989 and 1990 releases to simulate
-publication lags, constructing an information set close to what you
-*would have had* at 01-Jan-1989.
-
-To do this, simply run
-
-```
-  `fred.vint('GDPC1', '1989-01-01', 'pseudo', 1)
-```
-
-This package will do exactly the method described above, using the
-median publication delay (computed over the entire available history of
-the series) to discard observations.
-
 ### Additional Functions
 
-Here are the remaining user-oriented functions. (Non-user oriented
-functions end with an underscore like `FcnName_.m`):
+Here are some examples for the remaining user-oriented functions:
 
 - `fred.firstRelease('GDPC1')`: For all observation dates of `GDPC1`,
   return the first release (rather than subsequent revisions or the
   latest value).
+- `fred.firstRelease('GDPC1', 'units', 'pca')`: First releases of GDPC1
+  in percent-annualized units. Transformation done by `fred.transform`
+  (since passing this to the Fred API does not work, for some reason).
 - `getvints('GDPC1')`: Return available vintage dates for `GDPC1`.
 - `transform(X, tform, frqcy)`: Transform a series, where `tform` is a
   string for the transformation type (same as Fred API conventions). If
   `X` is a matrix of data, `tform` and `frqcy` should be cell arrays,
   one entry for each column of `X`.
+
+The remaining non-user oriented functions have names ending with an
+underscore, like `latest_.m`.  Often, the user-oriented functions are
+just wrappers that parse the user's input and then call these underscore
+functions. You don't ever really need to worry about them.
 
 
 ### Parallel Calls
