@@ -4,7 +4,7 @@ For fetching the latest and vintage data from
 [Fred](http://research.stlouisfed.org/fred2/) and
 [Alfred](https://alfred.stlouisfed.org/).
 
-The package aims to be simple enough for importing data quickly and
+This package aims to be simple enough for importing data quickly and
 interactively, while still having enough muscle to download many series
 over many vintage dates.
 
@@ -27,8 +27,8 @@ Three steps:
 
 1. Clone this repo somewhere, and add that somewhere to your Matlab path.
 
-2. Supply an API key in the file `api.txt`. (See [Fred
-   website](http://api.stlouisfed.org/api_key.html) to get one.)
+2. Supply an API key in the file `api.txt`. (See
+  [Fred website](http://api.stlouisfed.org/api_key.html) to get one.)
 
 3. As this is a Matlab package, call functions with a `fred.` prefix.
    Example `fred.latest('GDPC1')`.
