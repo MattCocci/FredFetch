@@ -4,6 +4,10 @@ For fetching the latest and vintage data from
 [Fred](http://research.stlouisfed.org/fred2/) and
 [Alfred](https://alfred.stlouisfed.org/).
 
+The goal is a package simple enough to import data quickly and
+interactively, while still having enough muscle to download many series
+over many vintage dates.
+
 ## Setup
 
 Three steps:
@@ -14,21 +18,48 @@ Three steps:
    website](http://api.stlouisfed.org/api_key.html) to get one.)
 
 3. As this is a Matlab package, call functions with a `fred.` prefix.
-   Example `fred.latest('GDPC1')`
+   Example `fred.latest('GDPC1')`.
+
+## Basic Usage
+
+You really only need to interact with two functions:
+
+1. `fred.latest(series)`: For fetching the latest data.
+2. `fred.vint(series, vint)`: For fetching data as it existed at some vintage date.
+
+Where `series` is a Fred series code (or cell of codes), and `vint` is a
+Matlab datenum or array of datenums (or, alternatively, cell and cell
+array of datestrings).
+
+Function calls will return structs with the following fields:
+
+- `info`: Detailed information about the series.
+- `series`: Series code
+- `frequency_short`: Short identifier of the native frequency (`Q`, `M`,
+  etc.)
+- `realtime`: The vintage date. If you pull the latest data, this is
+  the current date.
+- `pseudo`: Whether it is a true or simulated vintage (see below).
+- `date`: Observation dates
+- `value`: Array of series values.
+
+All series are returned in the native Fred units (so often levels, not
+percent changes, or differences). If you need to transform the data, see
+the function `fred.transform`.
+
 
 ### Fetching the Latest Data
 
 This is the simplest case, when you want to quickly import into Matlab
 the latest data for one or many series. Examples:
 
-- `fred.latest('GDPC1')`: Fetch the series GDPC1. Return in struct with
-  dates and information/notes about the series.
+- `fred.latest('GDPC1')`: Fetch the series GDPC1.
 - `fred.latest({'GDPC1', 'PAYEMS', 'NAPM'})`: Fetch multiple series at
-  once, including data with different frequencies. The returned struct
-  will have info, a single matrix of aligned data, and a common date
-  vector.
-
-All data are in the native Fred frequency, in levels.
+  once, including data with different frequencies. The returned data
+  will be merged into a single data matrix (aligned and accounting for
+  different frequencies).
+- `fred.latest({'GDPC1', 'PAYEMS', 'NAPM'}, 0)`: Same as above, but
+  returns a struture array, with one entry per series. Does _not_ merge data into common data matrix.
 
 The real advantage of `fred.latest` is that it's snappy. Though you
 could download these data using the vintage functions below (with the
@@ -44,11 +75,45 @@ preferred.
 
 To fetch the data that would have existed at a certain date, run
 
-- `fred.vint('GDPC1', '2001-01-01')`: For a single series.
-- `fred.vint({'GDPC1', 'PAYEMS', 'NAPM'}, '2001-01-01')`: For multiple series.
-- `fred.vintall('GDPC1')`: All vintages of a given series. Observation
-  dates along the rows, unique vintage dates along the columns of
-  returned data matrix.
+- `fred.vint('GDPC1', '2001-01-01')`: Fetch series as it existed
+  01-Jan-2001.
+- `fred.vint({'GDPC1', 'PAYEMS', 'NAPM'}, '2001-01-01')`: Fetch multiple series.
+- `fred.vint({'GDPC1', 'PAYEMS', 'NAPM'}, '2001-01-01', 0)`: Fetch
+  multiple series, but don't merge into common matrix.
+- `fred.vint('GDPC1', datenum(2000:2015,1,1))`: Get series at
+  January 1 of every year from 2000 to 2015.
+- `fred.vint({'GDPC1', 'PAYEMS', 'NAPM'}, datenum(2000:2015,1,1))`: Get
+  multiple series at January 1 of every year from 2000 to 2015.
+- `fred.vintall('GDPC1')`: All available vintages of a given series.
+  Observation dates along the rows, unique vintage dates along the
+  columns of returned data matrix.
+
+In general, within the `value` field of returned structure, rows
+correspond to different observation dates, while columns represent
+*either* different series or different vintage dates of the same series.
+Should be clear from the call and sizes of the returned information.
+
+#### Pseudo-Vintages
+
+Sometimes, you cannot get true vintages for a certain date. For example,
+Fred does not have `GDPC1` vintages from before 1991. However, you would
+like to do the best you can and *simulate* the vintage.
+
+In particular, you might not have a 01-Jan-1989 `GDPC1` vintage, but you
+can take the first available vintage for the series from 12-Dec-1991,
+and chop off enough of the 1989 and 1990 releases to simulate
+publication lags and get an information set close to what you would have
+had at 01-Jan-1989.
+
+To do this, simply run
+
+```
+  `fred.vint('GDPC1', '1989-01-01', 'pseudo', 1)
+```
+
+This package will do exactly the method described above, using the
+median publication delay (computed over the entire available history of
+the series) to discard observations.
 
 #### Advanced Usage
 
@@ -79,15 +144,65 @@ Note that currently, if requesting many series, the optional arguments
 provided will be _identical_ across each request. On the to-do list:
 accepting cells that can be iterated over as we iterate over series.
 
+#### Pseudo-Vintages
 
-#### Vintage Availability
+Most series do not have vintage data available at any arbitrary date.
+Often, you can only download vintage data after some specific date.  For
+example, Fred does not have `GDPC1` vintages from before 1991. However,
+you might like to do the best you can and *simulate* vintages.
 
-Note that before 1990s, you won't have much (if any) luck pulling
-vintage data. And before the 2000s, it will also be slim pickings.
+In particular, you might not have the 01-Jan-1989 `GDPC1` vintage, but you
+can take the first available vintage for the series from 12-Dec-1991,
+and chop off enough of the 1989 and 1990 releases to simulate
+publication lags, constructing an information set close to what you
+*would have had* at 01-Jan-1989.
 
-To help, series without any data for the requested vintage date will be
-an all-`NaN` column in the returned data matrix. That way, if you're
-looping over vintage dates and downloading data for multiple series, the
-size of the data matrix isn't changing with vintage availability.
+To do this, simply run
+
+```
+  `fred.vint('GDPC1', '1989-01-01', 'pseudo', 1)
+```
+
+This package will do exactly the method described above, using the
+median publication delay (computed over the entire available history of
+the series) to discard observations.
+
+### Additional Functions
+
+Here are the remaining user-oriented functions. (Non-user oriented
+functions end with an underscore like `FcnName_.m`):
+
+- `fred.firstRelease('GDPC1')`: For all observation dates of `GDPC1`,
+  return the first release (rather than subsequent revisions or the
+  latest value).
+- `getvints('GDPC1')`: Return available vintage dates for `GDPC1`.
+- `transform(X, tform, frqcy)`: Transform a series, where `tform` is a
+  string for the transformation type (same as Fred API conventions). If
+  `X` is a matrix of data, `tform` and `frqcy` should be cell arrays,
+  one entry for each column of `X`.
+
+
+### Parallel Calls
+
+When looping over many, many series, you might want to download and
+parse the data in parallel. Not that if you're just running
+`fred.latest`, you problably don't need to worry about parallelizing.
+But given many series, `fred.vint` is sufficiently slow (due to all of
+the json parsing) that you could benefit from parallelizing over series.
+
+To do this, simply add the following argument
+
+```
+  `fred.vint({'GDPC1', 'NAPM', 'PAYEMS'}, '1989-01-01', 'parworkers', Nworkers)
+```
+
+where `Nworkers` is the number of parallel workers you would like to
+use. The package will select the minimum of that and the number of
+series, so you could even set it to NaN or Inf if you would like.
+
+Note also that this will not conflict if you pass the optional `pseudo`
+key and value before or after. But any additional arguements that should
+be handed to the Fred API (like `observation_start` and it's value)
+should come last in the argument list.
 
 
