@@ -25,7 +25,6 @@ function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargi
         individual{s} = feval(dl_fcn, series{s}, varargin{:});
       end
     end
-    not_empty = find(cellfun(@(s) ~isfield(s.info, 'url'), individual));
 
 
   %% Merge or Join the downloaded objects
@@ -39,15 +38,25 @@ function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargi
 
     else % Merge into data matrix
 
+      not_empty = find(cellfun(@(s) ~isfield(s.info, 'url'), individual));
+
       % Add info
-      data.info      = cellfun(@(s) s.info, individual, 'un', 0);
-      data.series    = cellfun(@upper, series, 'un', 0);
-      data.frequency = repmat({''},Nseries,1);
-      data.frequency(not_empty) = cellfun(@(s) s.info.frequency_short, individual(not_empty), 'un', 0);
+      carry_over = {'info', 'series', 'frequency_short'};
+      for n = 1:length(carry_over)
+        data.(carry_over{n}) = cellfun(@(s) s.(carry_over{n}), individual, 'un', 0);
+      end
+
+      % Add realtime dates; collapse to 1 if all the same
+      data.realtime = nan(Nseries,1);
+      data.realtime = cellfun(@(s) s.realtime, individual(not_empty));
+      if length(unique(data.realtime)) == 1
+        data.realtime = unique(data.realtime);
+      end
 
       % Align the vintage datasets
-      alldates       = cellfun(@(s) s.date, individual(not_empty), 'un', 0);
-      data.date  = sort(unique(vertcat(alldates{:})));
+      alldates      = cellfun(@(s) s.date, individual(not_empty), 'un', 0);
+      data.date     = sort(unique(vertcat(alldates{:})));
+
       data.value = nan(length(data.date), Nseries);
       for n = 1:length(not_empty)
         s = not_empty(n);

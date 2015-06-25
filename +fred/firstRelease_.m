@@ -1,4 +1,4 @@
-function [rlsdata] = firstRelease_single(series, varargin)
+function [rlsdata] = firstRelease_(series, varargin)
 
   %% Grab the series
 

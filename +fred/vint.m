@@ -26,16 +26,17 @@ function [vintdata] = vint(series, vint_date, varargin)
 
   [opt, toPass] = fred.parseVarargin_(varargin{:});
 
-  if datenum(vint_date) < datenum(1991,1,1)
-    warning('Early vintage date; data might not exist, error likely.')
+  vint_date = fred.dtnum(vint_date);
+  if any(vint_date < datenum(1991,1,1)) && ~opt.pseudo
+    warning('Early vintage date; data might not exist for some or all series.')
   end
 
-  % Dispatch the call to different function depending upon whether one
-  % or multiple series are specified
-  if ( iscell(vint_date) || isnumeric(vint_date) ) && ( length(vint_date) > 1 )
-    vintdata = fred.dispatch_(0, opt.parworkers, @fred.vintsFromAll, series, vint_date, opt.pseudo, toPass{:});
+  % Call to different functions depending upon whether one or multiple
+  % vint dates are specified
+  if length(vint_date) > 1
+    vintdata = fred.dispatch_(0, opt.parworkers, @fred.vintsFromAll_, series, vint_date, opt.pseudo, toPass{:});
   else
-    vintdata = fred.dispatch_(opt.toDataset, opt.parworkers, @fred.vint_, series, vint_date, toPass{:});
+    vintdata = fred.dispatch_(opt.toDataset, opt.parworkers, @fred.vint_, series, vint_date, opt.pseudo, toPass{:});
   end
 
 

@@ -29,7 +29,7 @@ function [returned, success] = ReadFredURL(url, json, max_attempt)
     success  = 1;
   catch
     if max_attempt - 1
-      [returned, success] = fred.ReadFredURL(url, json, max_attempt-1);
+      [returned, success] = fred.ReadFredURL_(url, json, max_attempt-1);
       return
     else
       returned = lasterror();

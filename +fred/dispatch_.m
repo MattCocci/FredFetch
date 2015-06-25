@@ -1,4 +1,4 @@
-function [vintdata] = dispatch(toDataset, parworkers, fcn, series, varargin)
+function [vintdata] = dispatch_(toDataset, parworkers, fcn, series, varargin)
 
 
   if iscell(series) && (length(series) == 1)

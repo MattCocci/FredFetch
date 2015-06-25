@@ -16,4 +16,5 @@ function [vintdata] = vintall(series, varargin)
   for s = 1:length(series)
     vintdata(s).publag = fred.computePublag_(vintdata(s).date, vintdata(s).realtime, vintdata(s).value);
   end
+
 end
