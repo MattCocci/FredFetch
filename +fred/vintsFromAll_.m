@@ -40,7 +40,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
 
     % Select data column for each given vintage date from the matrix of
     % all vintages
-    transfer = {'info', 'series', 'frequency_short'};
+    transfer = {'info', 'series', 'frequency', 'units'};
     for n = 1:length(transfer)
       returned.(transfer{n}) = vintall.(transfer{n});
     end

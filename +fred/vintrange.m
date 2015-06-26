@@ -10,22 +10,24 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
 
   %% Return on errors
   if ~success
-    vintdata.info            = query;
-    vintdata.series          = series;
-    vintdata.frequency_short = '';
-    vintdata.realtime        = [];
-    vintdata.date            = [];
-    vintdata.value           = [];
+    vintdata.info      = query;
+    vintdata.series    = series;
+    vintdata.frequency = '';
+    vintdata.units     = '';
+    vintdata.realtime  = [];
+    vintdata.date      = [];
+    vintdata.value     = [];
     return
   end
   fprintf('done\n');
 
   %% Parse the data
-  vintdata.info            = vertcat(query.info.seriess{:});
-  vintdata.series          = series;
-  vintdata.frequency_short = query.info.seriess{end}.frequency_short;
-  obs                      = vertcat(query.obs.observations{:});
-  Nall                     = length(obs);
+  vintdata.info      = vertcat(query.info.seriess{:});
+  vintdata.series    = series;
+  vintdata.frequency = query.info.seriess{end}.frequency_short;
+  vintdata.units     = query.obs.units;
+  obs                = vertcat(query.obs.observations{:});
+  Nall               = length(obs);
 
   %% Put the dates and values into arrays
   flds = {'realtime_start', 'realtime_end', 'date', 'value'};

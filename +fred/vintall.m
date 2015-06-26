@@ -14,7 +14,11 @@ function [vintdata] = vintall(series, varargin)
     series = {series};
   end
   for s = 1:length(series)
-    vintdata(s).publag = fred.computePublag_(vintdata(s).date, vintdata(s).realtime, vintdata(s).value);
+    if ~isempty(vintdata(s).value)
+      vintdata(s).publag = fred.computePublag_(vintdata(s).date, vintdata(s).realtime, vintdata(s).value);
+    else
+      vintdata(s).publag = repmat(struct(), 0, 1);
+    end
   end
 
 end

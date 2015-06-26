@@ -1,71 +1,74 @@
-function [X] = transform(X, transform, frequency)
+function [data] = transform(data, tf, frequency)
 
-  % Define series that are annualized and those that are one period
-  % changes
-  onePd  = {'chg', 'pch', 'cch'};
-  annual = {'ch1', 'pc1', 'pca', 'cca'};
+  %% Helper functions
 
-  if any(strcmp(transform, onePd))
-    Npd = 1;
+    % Inline if
+    iif = @(varargin) varargin{2*find([varargin{1:2:end}], 1, 'first')}();
 
-  elseif any(strcmp(transform, annual))
-    % Set the number of periods per year to use when computing percent
-    % changes and differences and such
-    switch upper(frequency)
-      case 'Q'
-        pdsPerYear = 4;
-      case 'M'
-        pdsPerYear = 12;
-      case 'W'
-        pdsPerYear = 52;
-      case 'D'
-        pdsPerYear = 365;
-      otherwise
-        pdsPerYear = [];
+    % For indexing: If x is a string (which happens whn you download a
+    % single series); otherwise, x is a cell, so return x{idx}; might
+    % want to change output so series, frequency, units, always returns
+    % cells
+    idx = @(x,idx) iif(ischar(x), x, true, @() x{idx});
+    if ischar(tf), tf = {tf}; end
+
+
+  %% Handle the different types of data structures that might come in
+
+  if isstruct(data)
+
+    % If there are multiple series stacked in an array struct (not
+    % merged, i.e. toDataset = 0 in a fred.vint or fred.latest call)
+    if length(data) > 1
+
+      Nseries = length(data);
+      for n = 1:Nseries
+        if strcmp(data(n).units, 'lin') && ~strcmp(tf{n}, 'lin')
+          [data(n).value, valid] = fred.transform_(data(n).value, tf{n}, data(n).frequency);
+          if valid
+            data(n).units = tf{n};
+          end
+        elseif ~strcmp(data(n).units, tf{n})
+          warning(sprintf('Cannot go from %s to %s units', data(n).units, tf{n}))
+        end
+      end
+
+    else % You are working with a merged dataset
+      Nseries = size(data.value,2);
+      if length(tf) ~= Nseries
+        error('Size of transformation array not equal to number of series in data.value matrix.')
+      end
+
+      % Loop over series and make the transformation
+      units = data.units;
+      if ischar(units), units = {units}; end
+      for n = 1:Nseries
+        % Only make transformation if you are going from lin in the data
+        % to a percent change or difference
+        if strcmp(idx(units,n), 'lin') && ~strcmp(tf{n}, 'lin')
+          notNaN = ~isnan(data.value(:,n));
+          [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), tf{n}, idx(data.frequency,n));
+
+          if valid
+            if ischar(data.units), 
+              data.units = tf{n};
+            else
+              data.units{n} = tf{n};
+            end
+          end
+        elseif ~strcmp(data(n).units, tf{n})
+          warning(sprintf('Cannot go from %s to %s units', data(n).units, tf{n}))
+        end
+      end
     end
-    if any(strcmp(transform, annual)) && isempty(pdsPerYear)
-      error(['Periods per year not defined for frquency of type ' frqcy]);
-    else
-      Npd = pdsPerYear;
+
+
+  else % If X is just an array
+    Nseries = size(data,2);
+    for n = 1:Nseries
+      keyboard
+      data(:,n) = fred.transform_(data(:,n), tf{n}, idx(frequency,n));
     end
-  end
-
-  % Define the transformation to be made
-  Xlead     = X(2:end,:);
-  Xlag      = X(1:end-1,:);
-  pad       = nan(1,size(X,2));
-  if any(strcmp(transform, annual))
-    Xlead_Npd = X(Npd+1:end,:);
-    Xlag_Npd  = X(1:end-Npd,:);
-    pad_Npd   = nan(Npd,size(X,2));
-  end
-
-
-  switch transform
-    case 'chg'
-      X = [pad; Xlead - Xlag];
-
-    case 'ch1'
-      X = [pad_Npd; Xlead_Npd - Xlag_Npd];
-
-    case 'pch'
-      X = [pad; 100*((Xlead ./ Xlag)-1)];
-
-    case 'pc1'
-      X = [pad_Npd; 100*((Xlead_Npd ./ Xlag_Npd)-1)];
-
-    case 'pca'
-      X = [pad; 100*(((Xlead ./ Xlag).^4)-1)];
-
-    case 'cch'
-      X = [pad; 100*(log(Xlead)-log(Xlag))];
-
-    case 'cca'
-      X = [pad; 400*(log(Xlead)-log(Xlag))];
-
-    case 'log'
-      X = log(X);
-
   end
 
 end

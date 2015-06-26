@@ -15,16 +15,33 @@ function [rlsdata] = firstRelease_(series, varargin)
 
     % Download
     vintdata = fred.vintall(series, toPass{:});
+    if isempty(vintdata.value)
+      rlsdata.info      = vintdata.info;
+      rlsdata.series    = vintdata.series;
+      rlsdata.frequency = '';
+      rlsdata.units     = '';
+      rlsdata.date      = [];
+      rlsdata.released  = [];
+      rlsdata.value     = [];
+      return
+    end
 
     % Transform
-    vintdata.value = fred.transform(vintdata.value, units, vintdata.info(end).frequency_short);
+    Nvint = length(vintdata.realtime);
+    [vintdata.value, tfValid] = fred.transform_(vintdata.value, units, vintdata.info(end).frequency_short);
 
 
   %% Replace all the values with only the first releases
 
-    rlsdata.info   = vintdata.info;
-    rlsdata.series = vintdata.series;
-    rlsdata.date   = vintdata.date;
+    rlsdata.info      = vintdata.info;
+    rlsdata.series    = vintdata.series;
+    rlsdata.frequency = vintdata.info(end).frequency_short;
+    if tfValid
+      rlsdata.units = units;
+    else
+      rlsdata.units = 'lin';
+    end
+    rlsdata.date      = vintdata.date;
 
     [Nobs,Nvint] = size(vintdata.value);
     rlsdata.released = nan(Nobs,1);

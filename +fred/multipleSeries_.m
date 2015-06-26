@@ -41,7 +41,7 @@ function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargi
       not_empty = find(cellfun(@(s) ~isfield(s.info, 'url'), individual));
 
       % Add info
-      carry_over = {'info', 'series', 'frequency_short'};
+      carry_over = {'info', 'series', 'frequency', 'units'};
       for n = 1:length(carry_over)
         data.(carry_over{n}) = cellfun(@(s) s.(carry_over{n}), individual, 'un', 0);
       end

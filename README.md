@@ -174,6 +174,9 @@ Here are some examples for the remaining user-oriented functions:
   string for the transformation type (same as Fred API conventions). If
   `X` is a matrix of data, `tform` and `frqcy` should be cell arrays,
   one entry for each column of `X`.
+- `transform(dataStruct, transform)`: For transforming data within a
+  structure returned by `fred.vint` or `fred.latest`. Again, multiple
+  series require that `transform` be a cell of transformation strings.
 
 The remaining non-user oriented functions have names ending with an
 underscore, like `latest_.m`.  Often, the user-oriented functions are

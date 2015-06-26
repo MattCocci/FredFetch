@@ -3,11 +3,13 @@ function [data] = latest_(series)
   url = sprintf('http://research.stlouisfed.org/fred2/data/%s.txt', upper(series));
   [query, success] = fred.ReadFredURL_(url, 0);
   if ~success
-    data.info     = query;
-    data.series   = series;
-    data.date     = [];
-    data.realtime = [];
-    data.value    = [];
+    data.info      = query;
+    data.series    = series;
+    data.frequency = '';
+    data.units     = '';
+    data.date      = [];
+    data.realtime  = [];
+    data.value     = [];
     return
   end
 
@@ -46,12 +48,13 @@ function [data] = latest_(series)
 
 
   %% Store and return
-  data.info            = info;
-  data.series          = series;
-  data.frequency_short = info.frequency_short;
-  data.realtime        = datenum(date(), 'yyyy-mm-dd');
-  data.date            = datenum(date_value{1}, 'yyyy-mm-dd');
-  data.value           = date_value{2};
+  data.info      = info;
+  data.series    = series;
+  data.frequency = info.frequency_short;
+  data.units     = 'lin';
+  data.realtime  = datenum(date(), 'yyyy-mm-dd');
+  data.date      = datenum(date_value{1}, 'yyyy-mm-dd');
+  data.value     = date_value{2};
 
 
 end
