@@ -13,12 +13,26 @@ function [data] = transform(data, tf, frequency)
     if ischar(tf), tf = {tf}; end
 
 
-  %% Handle the different types of data structures that might come in
+  %% Handle the different types of X data structures that might come in
 
-  if isstruct(data)
+  % If X is just an array, not a data struct from one of the programs
+  if isnumeric
+    Nseries = size(data,2);
+    for n = 1:Nseries
+      keyboard
+      data(:,n) = fred.transform_(data(:,n), tf{n}, idx(frequency,n));
+    end
 
-    % If there are multiple series stacked in an array struct (not
-    % merged, i.e. toDataset = 0 in a fred.vint or fred.latest call)
+  elseif isstruct(data)
+
+    % If there are multiple series stacked in an array struct.  Each
+    % element of the struct array should have data on the same series in
+    % "value" (whether value is a column vector or a matrix of the
+    % series at different vintage dates).
+    %
+    % This if block operates on what you get back from calls to
+    % fred.vint with multiple series *and* vintages or calls fred.vint
+    % with toDataset = 0.
     if length(data) > 1
 
       Nseries = length(data);
@@ -33,7 +47,7 @@ function [data] = transform(data, tf, frequency)
         end
       end
 
-    else % You are working with a merged dataset
+    else % You are working with a merged dataset with possibly mixed frequencies
       Nseries = size(data.value,2);
       if length(tf) ~= Nseries
         error('Size of transformation array not equal to number of series in data.value matrix.')
@@ -43,14 +57,13 @@ function [data] = transform(data, tf, frequency)
       units = data.units;
       if ischar(units), units = {units}; end
       for n = 1:Nseries
-        % Only make transformation if you are going from lin in the data
-        % to a percent change or difference
+        % Only transform if going from lin to a pct change or diff
         if strcmp(idx(units,n), 'lin') && ~strcmp(tf{n}, 'lin')
           notNaN = ~isnan(data.value(:,n));
           [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), tf{n}, idx(data.frequency,n));
 
           if valid
-            if ischar(data.units), 
+            if ischar(data.units)
               data.units = tf{n};
             else
               data.units{n} = tf{n};
@@ -62,13 +75,8 @@ function [data] = transform(data, tf, frequency)
       end
     end
 
-
-  else % If X is just an array
-    Nseries = size(data,2);
-    for n = 1:Nseries
-      keyboard
-      data(:,n) = fred.transform_(data(:,n), tf{n}, idx(frequency,n));
-    end
+  else
+    error('I don''t know how to transform that')
   end
 
 end

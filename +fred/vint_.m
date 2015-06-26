@@ -16,6 +16,7 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
       vintdata.series    = upper(series);
       vintdata.frequency = '';
       vintdata.units     = '';
+      vintdata.pseudo    = [];
       vintdata.realtime  = [];
       vintdata.date      = [];
       vintdata.value     = [];
@@ -29,6 +30,7 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
   vintdata.series    = upper(series);
   vintdata.frequency = query.info.seriess{end}.frequency_short;
   vintdata.units     = query.obs.units;
+  vintdata.pseudo    = NaN;
 
   obs               = vertcat(query.obs.observations{:});
   Nobs              = length(obs);

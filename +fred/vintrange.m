@@ -14,6 +14,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
     vintdata.series    = series;
     vintdata.frequency = '';
     vintdata.units     = '';
+    vintdata.pseudo    = [];
     vintdata.realtime  = [];
     vintdata.date      = [];
     vintdata.value     = [];
@@ -65,6 +66,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   %% Loop over realtime dates and fill in what you have at that time
 
     % Set up vintdata structure that will hold everything
+    vintdata.pseudo   = nan(length(realtime),1);
     vintdata.realtime = realtime;
     vintdata.date     = unq.date;
     Nobs  = length(vintdata.date);
@@ -95,6 +97,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
     % Kill the columns that are identical to others
     vintdata.realtime(find(deleteCol)) = [];
     vintdata.value(:,find(deleteCol))  = [];
+    vintdata.pseudo(find(deleteCol))   = [];
 
 
 end

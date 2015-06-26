@@ -35,7 +35,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
 
     % Get publication lags for pseudo vintage
     if pseudo
-      publag  = fred.computePublag_(vintall.date, vintall.realtime, vintall.value);
+      publag = fred.computePublag_(vintall.date, vintall.realtime, vintall.value);
     end
 
     % Select data column for each given vintage date from the matrix of
@@ -44,6 +44,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
     for n = 1:length(transfer)
       returned.(transfer{n}) = vintall.(transfer{n});
     end
+    returned.pseudo   = nan(length(vintdates),1);
     returned.realtime = vintdates;
     returned.date = vintall.date;
 
@@ -60,6 +61,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
         % the observation date
         available = ((vint-vintall.date) >= publag.median);
         returned.value(find(available),n) = vintall.value(find(available),1);
+        returned.pseudo(n) = vintall.realtime(1); % First available date
       end
     end
 

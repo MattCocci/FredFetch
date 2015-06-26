@@ -46,7 +46,10 @@ function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargi
         data.(carry_over{n}) = cellfun(@(s) s.(carry_over{n}), individual, 'un', 0);
       end
 
-      % Add realtime dates; collapse to 1 if all the same
+      % Add pseudo and realtime dates; collapse to 1 if all the same
+      data.pseudo = nan(Nseries,1);
+      data.pseudo = cellfun(@(s) s.pseudo, individual(not_empty));
+
       data.realtime = nan(Nseries,1);
       data.realtime = cellfun(@(s) s.realtime, individual(not_empty));
       if length(unique(data.realtime)) == 1

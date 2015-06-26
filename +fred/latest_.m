@@ -8,6 +8,7 @@ function [data] = latest_(series)
     data.frequency = '';
     data.units     = '';
     data.date      = [];
+    data.pseudo    = [];
     data.realtime  = [];
     data.value     = [];
     return
@@ -52,6 +53,7 @@ function [data] = latest_(series)
   data.series    = series;
   data.frequency = info.frequency_short;
   data.units     = 'lin';
+  data.pseudo    = NaN;
   data.realtime  = datenum(date(), 'yyyy-mm-dd');
   data.date      = datenum(date_value{1}, 'yyyy-mm-dd');
   data.value     = date_value{2};
