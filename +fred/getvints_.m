@@ -10,9 +10,14 @@ function [returned] = getvints_(series)
     series,...
     opt.api);
 
-  vintdates = jsonlab.loadjson(urlread(url));
-  returned.series    = series;
-  returned.vintdates = cellfun(@(dt) datenum(dt, 'yyyy-mm-dd'), vintdates.vintage_dates)';
+  try
+    vintdates = jsonlab.loadjson(urlread(url));
+    returned.series    = series;
+    returned.vintdates = cellfun(@(dt) datenum(dt, 'yyyy-mm-dd'), vintdates.vintage_dates)';
+  catch
+    returned.series    = series;
+    returned.vintdates = [];
+  end
 
 
 end
