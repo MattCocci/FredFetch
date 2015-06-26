@@ -28,7 +28,7 @@ Three steps:
 <ol type="1">
 <li>Clone this repo somewhere, and add that somewhere to your Matlab path.</li>
 <li> Supply an API key in a file named <code>api.txt</code> in the top-level directory (the one <code>README.md</code> lives in). See the <a href="http://api.stlouisfed.org/api_key.html" target="_blank">Fred website</a> to get one.</li>
-<li>As this is a Matlab package, call functions with a `fred.` prefix.  Example `fred.latest('GDPC1')`</li>
+<li>As this is a Matlab package, call functions with a <code>fred.</code> prefix.  Example <code>fred.latest('GDPC1')</code></li>
 </ol>
 
 
