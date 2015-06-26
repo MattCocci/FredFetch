@@ -31,7 +31,6 @@ Three steps:
   (the one `README.md` lives in). See the [Fred
   website](http://api.stlouisfed.org/api_key.html) to get one.
 
-
 - As this is a Matlab package, call functions with a `fred.` prefix.
   Example `fred.latest('GDPC1')`.
 
