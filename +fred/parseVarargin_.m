@@ -24,27 +24,19 @@ function [opt, toPass] = parseVarargin_(varargin)
 
   %% Now check for parallel and pseudo-vintage flags
 
-    opt.parworkers = 0; opt.pseudo = 0;
-
-    bool_inds = find(cellfun(@(arg) isnumeric(arg) || islogical(arg), varargin));
-    if isempty(bool_inds)
-      toPass = varargin;
-    else
-      keys = varargin(bool_inds - 1);
-      vals = [varargin{bool_inds}];
-
-      par_ind = find(strcmp(keys, 'parworkers'));
-      if ~isempty(par_ind)
-        opt.parworkers = vals(par_ind);
+    names = {'parworkers', 'pseudo', 'frequency', 'units'};
+    rem = zeros(1,2*length(varargin));
+    for n = 1:length(names)
+      ind = find(strcmp(names{n}, varargin));
+      if isempty(ind)
+        opt.(names{n}) = 0;
+      else
+        opt.(names{n}) = varargin{ind+1};
+        rem([ind ind+1]) = 1;
       end
-
-      pseudo_ind = find(strcmp(keys, 'pseudo'));
-      if ~isempty(pseudo_ind)
-        opt.pseudo = vals(pseudo_ind);
-      end
-
-      % Return varargin, with the parallel and pseudo shit stripped out
-      toPass = varargin(setdiff(1:length(varargin), [bool_inds bool_inds-1]));
     end
+
+    % Return varargin, with the parallel and pseudo shit stripped out
+    toPass = varargin(setdiff(1:length(varargin), find(rem)));
 
 end
