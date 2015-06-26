@@ -25,13 +25,17 @@ over many vintage dates.
 
 Three steps:
 
+
 1. Clone this repo somewhere, and add that somewhere to your Matlab path.
+
 
 2. Supply an API key in the file `api.txt`. (See
   [Fred website](http://api.stlouisfed.org/api_key.html) to get one.)
 
+
 3. As this is a Matlab package, call functions with a `fred.` prefix.
    Example `fred.latest('GDPC1')`.
+
 
 <a name="basic"/>
 ## Basic Usage
