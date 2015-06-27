@@ -24,7 +24,7 @@
 %
 function [vintdata] = vint(series, vint_date, varargin)
 
-  [opt, toPass] = fred.parseVarargin_(varargin{:});
+  [opt, toPass] = fred.parseVarargin_({'pseudo', 'parworkers'}, varargin{:});
 
   vint_date = fred.dtnum(vint_date);
   if any(vint_date < datenum(1991,1,1)) && ~opt.pseudo

@@ -1,12 +1,20 @@
 function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
 
+  %% Handle units and frequency changes
+  %
+  % For whatever reason, fred freaks out if you try to agggreate to a
+  % lower frequency or change the units. So we want strip those out of
+  % the optional args we pass to the fred api and handle them ourselves
+  % below
+  [opt, toPass] = fred.parseVarargin_({'frequency', 'units'}, varargin{:});
+
   series = upper(series);
   realtime_start = datestr(realtime_start, 'yyyy-mm-dd');
   realtime_end   = datestr(realtime_end, 'yyyy-mm-dd');
 
   %% Try to grab the data
   fprintf('Downloading Fred Data for %s...', series);
-  [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, varargin{:});
+  [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, toPass{:});
 
   %% Return on errors
   if ~success
@@ -99,5 +107,10 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
     vintdata.value(:,find(deleteCol))  = [];
     vintdata.pseudo(find(deleteCol))   = [];
 
+
+    % Transform the data if the user wanted to
+    if opt.units
+      vintdata = fred.transform(vintdata, opt.units);
+    end
 
 end

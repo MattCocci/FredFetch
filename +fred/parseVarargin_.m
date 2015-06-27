@@ -1,4 +1,4 @@
-function [opt, toPass] = parseVarargin_(varargin)
+function [opt, toPass] = parseVarargin_(nameFlds, varargin)
 % PARSE_VARARGIN - Check for various flags in varargin and return stuff
 %                  to pass as additional options to FRED API
 %
@@ -24,14 +24,13 @@ function [opt, toPass] = parseVarargin_(varargin)
 
   %% Now check for parallel and pseudo-vintage flags
 
-    names = {'parworkers', 'pseudo', 'frequency', 'units'};
     rem = zeros(1,2*length(varargin));
-    for n = 1:length(names)
-      ind = find(strcmp(names{n}, varargin));
+    for n = 1:length(nameFlds)
+      ind = find(strcmp(nameFlds{n}, varargin));
       if isempty(ind)
-        opt.(names{n}) = 0;
+        opt.(nameFlds{n}) = 0;
       else
-        opt.(names{n}) = varargin{ind+1};
+        opt.(nameFlds{n}) = varargin{ind+1};
         rem([ind ind+1]) = 1;
       end
     end

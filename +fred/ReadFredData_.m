@@ -19,6 +19,9 @@ function [returned, success] = ReadFredData_(varargin)
 
   %% If it made it through without errors
   returned = query;
+  if length(returned.obs.observations) == returned.obs.limit
+    warning('Number of obs returned equals Fred API limit. Might not have all obs.')
+  end
 
 end
 

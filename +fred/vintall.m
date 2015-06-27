@@ -1,6 +1,6 @@
 function [vintdata] = vintall(series, varargin)
 
-  [opt, toPass] = fred.parseVarargin_(varargin{:});
+  [opt, toPass] = fred.parseVarargin_({'parworkers', 'pseudo'}, varargin{:});
 
   % Dispatch the call to different function depending upon whether one
   % or multiple series are specified

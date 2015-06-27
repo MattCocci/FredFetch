@@ -1,6 +1,5 @@
 function [vintdata] = vint_(series, vint_date, pseudo, varargin)
 
-
   %% Try to grab the data
   [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
 
@@ -28,9 +27,16 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
   %% Parse the data
   vintdata.info      = query.info.seriess{:};
   vintdata.series    = upper(series);
-  vintdata.frequency = query.info.seriess{end}.frequency_short;
-  vintdata.units     = query.obs.units;
-  vintdata.pseudo    = NaN;
+
+  frqcy_ind = find(strcmp('frequency', varargin));
+  if ~isempty(frqcy_ind)
+    vintdata.frequency = upper(varargin{frqcy_ind+1});
+  else
+    vintdata.frequency = query.info.seriess{end}.frequency_short;
+  end
+
+  vintdata.units  = query.obs.units;
+  vintdata.pseudo = NaN;
 
   obs               = vertcat(query.obs.observations{:});
   Nobs              = length(obs);
