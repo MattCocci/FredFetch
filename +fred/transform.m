@@ -46,7 +46,7 @@ function [data] = transform(data, tf, frequency)
         data.units = tf{:};
       end
 
-    % Dataset merges multiple series, possible frquency-mixing
+    % Dataset merges multiple series, possible frequency-mixing
     elseif iscell(data.series)
 
       % Loop over series and make the transformation
@@ -54,15 +54,15 @@ function [data] = transform(data, tf, frequency)
       for n = 1:Nseries
 
         % Only transform if going from lin to a pct change or diff
-        if strcmp(units{n}, 'lin') && ~strcmp(tf{n}, 'lin')
+        if strcmp(data.units{n}, 'lin') && ~strcmp(tf{n}, 'lin')
           notNaN = ~isnan(data.value(:,n));
           [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), tf{n}, data.frequency{n});
 
           if valid
             data.units{n} = tf{n};
           end
-        elseif ~strcmp(data(n).units, tf{n})
-          warning(sprintf('Cannot go from %s to %s units', data(n).units, tf{n}))
+        elseif ~strcmp(data.units, tf{n})
+          warning(sprintf('Cannot go from %s to %s units', data.units, tf{n}))
         end
       end
     end
