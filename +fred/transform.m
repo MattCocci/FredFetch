@@ -1,45 +1,44 @@
 function [data] = transform(data, tf, frequency)
 
-  %% Helper functions
 
-    % Inline if
-    iif = @(varargin) varargin{2*find([varargin{1:2:end}], 1, 'first')}();
+  if ischar(tf), tf = {tf}; end
+  if exist('frequency', 'var')
+    if ischar(frequency), frequency = {frequency}; end
+  end
 
-    if ischar(tf), tf = {tf}; end
-    if exist('frequency', 'var')
-      if ischar(frequency), frequency = {frequency}; end
-    end
+  %% Handle the different types of data structures that might come in
 
-
-  %% Handle the different types of X data structures that might come in
-
-  % If X is just an array, not a data struct from one of the programs
+  % If data is a struct that would come out of calls to fred.latest or
+  % fred.vint
   if isstruct(data)
 
-    % If there are multiple series stacked in an array struct.  Each
-    % element of the struct array should have data on the same series in
-    % "value" (whether value is a column vector or a matrix of the
+    % If multiple series stacked in an array struct.  Each element of
+    % the struct array should have data for the same series in "value"
+    % field (whether value is simply a column vector or a matrix of the
     % series at different vintage dates).
     %
     % This if block operates on what you get back from calls to
     % fred.vint with multiple series *and* vintages or calls fred.vint
-    % with toDataset = 0.
+    % and fred.latest with toDataset = 0.
     if length(data) > 1
 
       Nseries = length(data);
+      fromUnits = data(n).units;
+      toUnits   = tf{n};
+      trivial   = strcmp(fromUnits, toUnits);
       for n = 1:Nseries
-        if strcmp(data(n).units, 'lin') && ~strcmp(tf{n}, 'lin')
-          [data(n).value, valid] = fred.transform_(data(n).value, tf{n}, data(n).frequency);
-          if valid,
-            data(n).units = tf{n};
+        if ~trivial && strcmp(fromUnits, 'lin')
+          [data(n).value, valid] = fred.transform_(data(n).value, toUnits, data(n).frequency);
+          if valid
+            data(n).units = toUnits;
           end
 
-        elseif ~strcmp(data(n).units, tf{n})
-          warning(sprintf('Cannot go from %s to %s units', data(n).units, tf{n}))
+        elseif ~trivial
+          warning(sprintf('Cannot go from %s to %s units', fromUnits, toUnits))
         end
       end
 
-    % Dataset is all the same series over multiple vintage dates
+    % data.value is same series over multiple vintage dates in the cols
     elseif ischar(data.series)
       [data.value, valid] = fred.transform_(data.value, tf{:}, data.frequency);
       if valid
@@ -53,21 +52,25 @@ function [data] = transform(data, tf, frequency)
       Nseries = length(data.series);
       for n = 1:Nseries
 
+        fromUnits = data.units{n};
+        toUnits   = tf{n};
+        trivial   = strcmp(fromUnits, toUnits);
+
         % Only transform if going from lin to a pct change or diff
-        if strcmp(data.units{n}, 'lin') && ~strcmp(tf{n}, 'lin')
+        if ~trivial && strcmp(fromUnits, 'lin')
           notNaN = ~isnan(data.value(:,n));
-          [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), tf{n}, data.frequency{n});
+          [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), toUnits, data.frequency{n});
 
           if valid
-            data.units{n} = tf{n};
+            data.units{n} = toUnits;
           end
-        elseif ~strcmp(data.units, tf{n})
-          warning(sprintf('Cannot go from %s to %s units', data.units, tf{n}))
+        elseif ~trivial
+          warning(sprintf('Cannot go from %s to %s units', fromUnits, toUnits))
         end
       end
     end
 
-
+  % If data is just an array, not a data struct from one of the programs
   elseif isnumeric(data)
 
     Nseries = size(data,2);
