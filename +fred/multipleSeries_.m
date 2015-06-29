@@ -1,4 +1,4 @@
-function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargin)
+function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, varargin)
 
 
   %% Maybe open up parallel pool
@@ -30,42 +30,18 @@ function [data] = multipleSeries_(toDataset, parworkers, dl_fcn, series, varargi
   %% Merge or Join the downloaded objects
 
     % Just stack the returned arrays
-    if ~toDataset
+    if ~toDatasetByVint
       data = vertcat(individual{:});
       for n = 1:length(series)
         data(n).series = upper(series{n});
       end
 
-    else % Merge into data matrix
+    % Reshape into array structure where each element is a different
+    % vintage data and the data for different series are merged into a
+    % single data matrix of possibly mixed frequency
+    else
 
-      not_empty = find(cellfun(@(s) ~isfield(s.info, 'url'), individual));
-
-      % Add info
-      carry_over = {'info', 'series', 'frequency', 'units'};
-      for n = 1:length(carry_over)
-        data.(carry_over{n}) = cellfun(@(s) s.(carry_over{n}), individual, 'un', 0);
-      end
-
-      % Add pseudo and realtime dates; collapse to 1 if all the same
-      data.pseudo = nan(Nseries,1);
-      data.pseudo = cellfun(@(s) s.pseudo, individual(not_empty));
-
-      data.realtime = nan(Nseries,1);
-      data.realtime = cellfun(@(s) s.realtime, individual(not_empty));
-      if length(unique(data.realtime)) == 1
-        data.realtime = unique(data.realtime);
-      end
-
-      % Align the vintage datasets
-      alldates      = cellfun(@(s) s.date, individual(not_empty), 'un', 0);
-      data.date     = sort(unique(vertcat(alldates{:})));
-
-      data.value = nan(length(data.date), Nseries);
-      for n = 1:length(not_empty)
-        s = not_empty(n);
-        insert = arrayfun(@(t) find(data.date==t), individual{s}.date);
-        data.value(insert,s) = individual{s}.value;
-      end
+      data = fred.reshapeByVint(individual);
     end
 
 

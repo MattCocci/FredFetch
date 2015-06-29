@@ -34,9 +34,9 @@ function [vintdata] = vint(series, vint_date, varargin)
   % Call to different functions depending upon whether one or multiple
   % vint dates are specified
   if length(vint_date) > 1
-    vintdata = fred.dispatch_(0, opt.parworkers, @fred.vintsFromAll_, series, vint_date, opt.pseudo, toPass{:});
+    vintdata = fred.dispatch_(opt.toDatasetByVint, opt.parworkers, @fred.vintsFromAll_, series, vint_date, opt.pseudo, toPass{:});
   else
-    vintdata = fred.dispatch_(opt.toDataset, opt.parworkers, @fred.vint_, series, vint_date, opt.pseudo, toPass{:});
+    vintdata = fred.dispatch_(opt.toDatasetByVint, opt.parworkers, @fred.vint_, series, vint_date, opt.pseudo, toPass{:});
   end
 
 

@@ -19,7 +19,7 @@ function [data] = transform(data, tf, frequency)
     %
     % This if block operates on what you get back from calls to
     % fred.vint with multiple series *and* vintages or calls fred.vint
-    % and fred.latest with toDataset = 0.
+    % and fred.latest with toDatasetByVint = 0.
     if length(data) > 1
 
       Nseries = length(data);

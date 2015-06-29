@@ -11,13 +11,13 @@ function [opt, toPass] = parseVarargin_(nameFlds, varargin)
 % as additional options to the FRED API. They are returned as VARARGOUT
 % so you can use them (without the par and pseudo flags)
 
-  %% toDataset option
+  %% toDatasetByVint option
 
     % If the first entry is a straight number, no options, it represents
-    % "toDataset" flag
-    opt.toDataset = 1;
+    % "toDatasetByVint" flag
+    opt.toDatasetByVint = 1;
     if ~isempty(varargin) && isnumeric(varargin{1})
-      opt.toDataset = varargin{1};
+      opt.toDatasetByVint = varargin{1};
       varargin = varargin(2:end);
     end
 

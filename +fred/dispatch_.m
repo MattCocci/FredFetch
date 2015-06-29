@@ -1,4 +1,4 @@
-function [vintdata] = dispatch_(toDataset, parworkers, fcn, series, varargin)
+function [vintdata] = dispatch_(toDatasetByVint, parworkers, fcn, series, varargin)
 
 
   if iscell(series) && (length(series) == 1)
@@ -7,7 +7,7 @@ function [vintdata] = dispatch_(toDataset, parworkers, fcn, series, varargin)
   if isstr(series)
     vintdata = feval(fcn, series, varargin{:});
   else
-    vintdata = fred.multipleSeries_(toDataset, parworkers, fcn, series, varargin{:});
+    vintdata = fred.multipleSeries_(toDatasetByVint, parworkers, fcn, series, varargin{:});
   end
 
 
