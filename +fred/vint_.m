@@ -44,7 +44,7 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
   vintdata.date     = nan(Nobs,1);
   vintdata.value    = nan(Nobs,1);
   for t = 1:Nobs
-    vintdata.date(t) = datenum(obs(t).date, 'yyyy-mm-dd');
+    vintdata.date(t) = fred.dtnum(obs(t).date);
     val = str2num(obs(t).value);
     if ~isempty(val)
       vintdata.value(t) = val;

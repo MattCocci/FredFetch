@@ -54,8 +54,8 @@ function [data] = latest_(series)
   data.frequency = info.frequency_short;
   data.units     = 'lin';
   data.pseudo    = NaN;
-  data.realtime  = datenum(date(), 'yyyy-mm-dd');
-  data.date      = datenum(date_value{1}, 'yyyy-mm-dd');
+  data.realtime  = fred.dtnum(date());
+  data.date      = fred.dtnum(date_value{1});
   data.value     = date_value{2};
 
 

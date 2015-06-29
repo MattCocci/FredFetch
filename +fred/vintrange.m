@@ -9,8 +9,8 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   [opt, toPass] = fred.parseVarargin_({'frequency', 'units'}, varargin{:});
 
   series = upper(series);
-  realtime_start = datestr(realtime_start, 'yyyy-mm-dd');
-  realtime_end   = datestr(realtime_end, 'yyyy-mm-dd');
+  realtime_start = fred.dtstr(realtime_start);
+  realtime_end   = fred.dtstr(realtime_end);
 
   %% Try to grab the data
   fprintf('Downloading Fred Data for %s...', series);
@@ -43,7 +43,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   isdt = [1 1 1 0];
   for n = 1:length(flds)
     if isdt(n)
-      all.(flds{n}) = datenum(vertcat(obs(:).(flds{n})), 'yyyy-mm-dd');
+      all.(flds{n}) = fred.dtnum({obs(:).(flds{n})}');
       unq.(flds{n}) = unique(all.(flds{n}));
     else
       all.(flds{n}) = arrayfun(@(t) str2double(obs(t).(flds{n})), 1:Nall)';

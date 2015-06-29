@@ -22,14 +22,13 @@ function [url] = MakeFredURL_(urltype, varargin)
 
 
   %% Walk through and append additional options passed
-  fred_fmt  = 'yyyy-mm-dd';
   date_flds = {'observation_end'; 'observation_start'; 'realtime_end'; 'realtime_start'; 'vintage_dates'};
   Nextra    = length(varargin);
   for a = 1:2:Nextra
 
     % If a datefield is a datenum, convert to Fred format
     if any(strcmp(date_flds, varargin{a})) && isnumeric(varargin{a+1})
-      varargin{a+1} = datestr(varargin{a+1}, fred_fmt);
+      varargin{a+1} = fred.dtstr(varargin{a+1});
     end
 
     url = sprintf('%s&%s=%s', url, varargin{a}, varargin{a+1});
