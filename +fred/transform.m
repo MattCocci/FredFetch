@@ -28,7 +28,7 @@ function [data] = transform(data, tf, frequency)
       trivial   = strcmp(fromUnits, toUnits);
       for n = 1:Nseries
         if ~trivial && strcmp(fromUnits, 'lin')
-          [data(n).value, valid] = fred.transform_(data(n).value, toUnits, data(n).frequency);
+          [data(n).value, valid] = transform(data(n).value, toUnits, data(n).frequency);
           if valid
             data(n).units = toUnits;
           end
@@ -40,7 +40,7 @@ function [data] = transform(data, tf, frequency)
 
     % data.value is same series over multiple vintage dates in the cols
     elseif ischar(data.series)
-      [data.value, valid] = fred.transform_(data.value, tf{:}, data.frequency);
+      [data.value, valid] = transform(data.value, tf{:}, data.frequency);
       if valid
         data.units = tf{:};
       end
@@ -59,7 +59,7 @@ function [data] = transform(data, tf, frequency)
         % Only transform if going from lin to a pct change or diff
         if ~trivial && strcmp(fromUnits, 'lin')
           notNaN = ~isnan(data.value(:,n));
-          [data.value(notNaN,n), valid] = fred.transform_(data.value(notNaN,n), toUnits, data.frequency{n});
+          [data.value(notNaN,n), valid] = transform(data.value(notNaN,n), toUnits, data.frequency{n});
 
           if valid
             data.units{n} = toUnits;
@@ -75,7 +75,7 @@ function [data] = transform(data, tf, frequency)
 
     Nseries = size(data,2);
     for n = 1:Nseries
-      data(:,n) = fred.transform_(data(:,n), tf{n}, frequency{n});
+      data(:,n) = transform(data(:,n), tf{n}, frequency{n});
     end
 
 

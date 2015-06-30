@@ -1,4 +1,4 @@
-function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, varargin)
+function [data] = multipleSeries(toDatasetByVint, parworkers, dl_fcn, series, varargin)
 
 
   %% Maybe open up parallel pool

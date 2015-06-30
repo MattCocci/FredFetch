@@ -1,4 +1,4 @@
-function [opt, toPass] = parseVarargin_(nameFlds, varargin)
+function [opt, toPass] = parseVarargin(nameFlds, varargin)
 % PARSE_VARARGIN - Check for various flags in varargin and return stuff
 %                  to pass as additional options to FRED API
 %

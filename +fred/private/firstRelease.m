@@ -1,4 +1,4 @@
-function [rlsdata] = firstRelease_(series, varargin)
+function [rlsdata] = firstRelease(series, varargin)
 
   %% Grab the series
 
@@ -28,7 +28,7 @@ function [rlsdata] = firstRelease_(series, varargin)
 
     % Transform
     Nvint = length(vintdata.realtime);
-    [vintdata.value, tfValid] = fred.transform_(vintdata.value, units, vintdata.info(end).frequency_short);
+    [vintdata.value, tfValid] = transform(vintdata.value, units, vintdata.info(end).frequency_short);
 
 
   %% Replace all the values with only the first releases

@@ -1,4 +1,4 @@
-function [returned] = getvints_(series)
+function [returned] = getvints(series)
 
   %% Construct a query string and to pull the release dates
   opt = fred.GlobalOptions();

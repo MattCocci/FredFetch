@@ -1,9 +1,9 @@
-function [vintdata] = vint_(series, vint_date, pseudo, varargin)
+function [vintdata] = vint(series, vint_date, pseudo, varargin)
 
   series = upper(series);
 
   %% Try to grab the data
-  [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
+  [query, success] = readFredData('series_id', series, 'realtime_start', vint_date, 'realtime_end', vint_date, varargin{:});
 
 
   %% Return on errors
@@ -11,7 +11,7 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
 
     % Maybe construct a pseudo vintage
     if pseudo
-      vintdata = fred.vintsFromAll_(series, vint_date, 1, varargin{:});
+      vintdata = vintsFromAll(series, vint_date, 1, varargin{:});
     else
       vintdata.info      = query;
       vintdata.series    = series;

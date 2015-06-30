@@ -1,4 +1,4 @@
-function [X, leadtrail_nan_rows] = RemLeadTrailNaN_(X, choice)
+function [X, leadtrail_nan_rows] = trimNans(X, choice)
 
   nrows = size(X, 1);
   allnan_rows = (sum(~isnan(X),2) == 0);
