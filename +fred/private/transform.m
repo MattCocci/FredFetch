@@ -1,4 +1,4 @@
-function [X, valid] = transform_(X, tf, frequency)
+function [X, valid] = transform(X, tf, frequency)
 % TRANSFORM_ - Transform a vector or matrix from levels into specified
 %              other specified unit
 %

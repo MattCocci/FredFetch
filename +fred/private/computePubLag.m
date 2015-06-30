@@ -1,4 +1,4 @@
-function [publag] = computePublag_(obsdate, realtime, value)
+function [publag] = computePubLag(obsdate, realtime, value)
 
   % Diff along 2nd dimension of ~isnan; will have a 1 in the i,j entry
   % if observation i went from NaN to some value in vintage j.

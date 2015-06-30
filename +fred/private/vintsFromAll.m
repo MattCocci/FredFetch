@@ -1,4 +1,4 @@
-function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
+function [returned] = vintsFromAll(series, vintdates, pseudo, varargin)
 
   % Convert all vintage dates to datenums
   vintdates = fred.dtnum(vintdates);
@@ -35,7 +35,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
 
     % Get publication lags for pseudo vintage
     if pseudo
-      publag = fred.computePublag_(vintall.date, vintall.realtime, vintall.value);
+      publag = computePubLag(vintall.date, vintall.realtime, vintall.value);
     end
 
     % Select data column for each given vintage date from the matrix of
@@ -68,7 +68,7 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
   %% Chop off trailing nan rows, which arise for pseudo vintages
 
   if pseudo
-    [returned.value, trailNaNRows] = fred.RemLeadTrailNaN_(returned.value, 'trail');
+    [returned.value, trailNaNRows] = trimNans(returned.value, 'trail');
     returned.date(find(trailNaNRows)) = [];
   end
 

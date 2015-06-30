@@ -6,7 +6,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   % lower frequency or change the units. So we want strip those out of
   % the optional args we pass to the fred api and handle them ourselves
   % below
-  [opt, toPass] = fred.parseVarargin_({'frequency', 'units'}, varargin{:});
+  [opt, toPass] = parseVarargin({'frequency', 'units'}, varargin{:});
 
   series = upper(series);
   realtime_start = fred.dtstr(realtime_start);
@@ -14,7 +14,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
 
   %% Try to grab the data
   fprintf('Downloading Fred Data for %s...', series);
-  [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, toPass{:});
+  [query, success] = readFredData('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, toPass{:});
 
   %% Return on errors
   if ~success

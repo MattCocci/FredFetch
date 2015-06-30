@@ -1,7 +1,7 @@
 function [vints, success] = getvints(series)
 
   try
-    vints = fred.dispatch_(0, 0, @fred.getvints_, series);
+    vints = dispatch(0, 0, @getvints, series);
     success = 1;
   catch
     vints.series = series;

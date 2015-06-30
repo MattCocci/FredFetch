@@ -11,7 +11,7 @@
 % - Return either the error message or the URL contents (which are json)
 %   in a struct
 %
-function [returned, success] = ReadFredURL(url, json, max_attempt)
+function [returned, success] = readFredUrl(url, json, max_attempt)
 
   %% Get max attempt if not set
   if ~exist('max_attempt', 'var')
@@ -29,7 +29,7 @@ function [returned, success] = ReadFredURL(url, json, max_attempt)
     success  = 1;
   catch
     if max_attempt - 1
-      [returned, success] = fred.ReadFredURL_(url, json, max_attempt-1);
+      [returned, success] = readFredUrl(url, json, max_attempt-1);
       return
     else
       returned = lasterror();
