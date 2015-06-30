@@ -26,7 +26,8 @@ function [vintdata] = vint(series, vint_date, varargin)
 
   [opt, toPass] = fred.parseVarargin_({'pseudo', 'parworkers'}, varargin{:});
 
-  vint_date = fred.dtnum(vint_date);
+  % Make vint dates a datenum and sort
+  vint_date = sort(fred.dtnum(vint_date));
   if any(vint_date < datenum(1991,1,1)) && ~opt.pseudo
     warning('Early vintage date; data might not exist for some or all series.')
   end

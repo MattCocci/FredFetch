@@ -43,7 +43,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   isdt = [1 1 1 0];
   for n = 1:length(flds)
     if isdt(n)
-      all.(flds{n}) = fred.dtnum({obs(:).(flds{n})}');
+      all.(flds{n}) = fred.dtnum({obs(:).(flds{n})}',1);
       unq.(flds{n}) = unique(all.(flds{n}));
     else
       all.(flds{n}) = arrayfun(@(t) str2double(obs(t).(flds{n})), 1:Nall)';

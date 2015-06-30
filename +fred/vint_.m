@@ -42,11 +42,11 @@ function [vintdata] = vint_(series, vint_date, pseudo, varargin)
 
   obs               = vertcat(query.obs.observations{:});
   Nobs              = length(obs);
-  vintdata.realtime = fred.dtnum(vint_date);
+  vintdata.realtime = fred.dtnum(vint_date,1);
   vintdata.date     = nan(Nobs,1);
   vintdata.value    = nan(Nobs,1);
   for t = 1:Nobs
-    vintdata.date(t) = fred.dtnum(obs(t).date);
+    vintdata.date(t) = fred.dtnum(obs(t).date,1);
     val = str2num(obs(t).value);
     if ~isempty(val)
       vintdata.value(t) = val;

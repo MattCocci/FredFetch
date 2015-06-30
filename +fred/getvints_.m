@@ -13,7 +13,7 @@ function [returned] = getvints_(series)
   try
     vintdates = jsonlab.loadjson(urlread(url));
     returned.series    = series;
-    returned.vintdates = fred.dtnum(vintdates.vintage_dates)';
+    returned.vintdates = fred.dtnum(vintdates.vintage_dates,1)';
   catch
     returned.series    = series;
     returned.vintdates = [];

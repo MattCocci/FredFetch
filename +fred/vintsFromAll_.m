@@ -1,7 +1,7 @@
 function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
 
   % Convert all vintage dates to datenums
-  vintdates = fred.dtnum(vintdates);
+  vintdates = fred.dtnum(vintdates,1);
 
   % If pseudo specified and you don't actually need a pseudo vintage (bc
   % a vintage is available), turn it off
