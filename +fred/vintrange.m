@@ -13,7 +13,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   realtime_end   = fred.dtstr(realtime_end);
 
   %% Try to grab the data
-  fprintf('Downloading Fred Data for %s...', series);
+  fprintf('Downloading Fred Data for %s...\n', series);
   [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, toPass{:});
 
   %% Return on errors
@@ -28,7 +28,6 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
     vintdata.value     = [];
     return
   end
-  fprintf('done\n');
 
   %% Parse the data
   vintdata.info      = vertcat(query.info.seriess{:});
