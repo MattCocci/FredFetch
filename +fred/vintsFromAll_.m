@@ -6,8 +6,8 @@ function [returned] = vintsFromAll_(series, vintdates, pseudo, varargin)
   % If pseudo specified and you don't actually need a pseudo vintage (bc
   % a vintage is available), turn it off
   if pseudo
-    [available, success] = fred.getvints(series);
-    if success && vintdates(1) >= available.vintdates(1)
+    available = fred.getvints(series);
+    if available.success && vintdates(1) >= available.vintdates(1)
       pseudo = 0;
     end
   end

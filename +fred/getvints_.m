@@ -1,7 +1,12 @@
-function [returned] = getvints_(series)
+function [returned] = getvints_(series, max_attempt)
 
-  %% Construct a query string and to pull the release dates
+  %% Options
   opt = fred.GlobalOptions();
+  if ~exist('max_attempt', 'var')
+    max_attempt = opt.max_attempt;
+  end
+
+  %% Construct a query string to pull the release dates
   url = sprintf([...
     'http://api.stlouisfed.org/fred/series/vintagedates?'...
     'series_id=%s' ...
@@ -14,10 +19,17 @@ function [returned] = getvints_(series)
     vintdates = jsonlab.loadjson(urlread(url));
     returned.series    = series;
     returned.vintdates = fred.dtnum(vintdates.vintage_dates,1)';
+    returned.success   = 1;
   catch
-    returned.series    = series;
-    returned.vintdates = [];
+    if max_attempt - 1
+      pause(5);
+      returned = fred.getvints_(series, max_attempt-1);
+      return
+    else
+      returned.series    = series;
+      returned.vintdates = [];
+      returned.success   = 0;
+    end
   end
-
 
 end

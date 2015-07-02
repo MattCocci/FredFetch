@@ -13,7 +13,7 @@ function [vintdata] = vintrange(series, realtime_start, realtime_end, varargin)
   realtime_end   = fred.dtstr(realtime_end);
 
   %% Try to grab the data
-  fprintf('Downloading Fred Data for %s...\n', series);
+  fprintf('Downloading %s...\n', series);
   [query, success] = fred.ReadFredData_('series_id', series, 'realtime_start', realtime_start, 'realtime_end', realtime_end, toPass{:});
 
   %% Return on errors
