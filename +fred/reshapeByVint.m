@@ -25,7 +25,6 @@ function [dataByVint] = reshapeByVint(individualBySeries)
   vints = unique([dataBySeries.realtime]);
   Nvint = length(vints);
 
-
   % Loop over vintages and build up the dataByVint array struct
   for v = 1:Nvint
 

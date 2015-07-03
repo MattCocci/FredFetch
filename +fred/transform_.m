@@ -23,7 +23,10 @@ function [X, valid] = transform_(X, tf, frequency)
     scaleAnnual = {'pca', 'cca'};
 
     % If the transformation type is not valid, return
-    if ~any(strcmp([chgPrevPd, chgPrevYr, {'lin'}], tf))
+    if strcmp('lin', tf)
+      valid = 1;
+      return
+    elseif ~any(strcmp([chgPrevPd, chgPrevYr], tf))
       valid = 0;
       warning(sprintf('%s is not a valid transformation type', tf));
       return

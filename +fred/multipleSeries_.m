@@ -16,13 +16,21 @@ function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, v
 
     Nseries    = length(series);
     individual = cell(Nseries, 1);
+
+    % Set up indexing of extra arguments, and if some are cells, we want
+    % to loop over them in the calls to dl_fcn
+    cells = cellfun(@iscell, varargin);
+    toPass = cell(Nseries, length(varargin));
+    toPass(:,~cells) = repmat(varargin(~cells), Nseries, 1);
+    toPass(:,cells) = [varargin{cells}];
+
     if parworkers
       parfor s = 1:Nseries
-        individual{s} = feval(dl_fcn, series{s}, varargin{:});
+        individual{s} = feval(dl_fcn, series{s}, toPass{s,:});
       end
     else
       for s = 1:Nseries
-        individual{s} = feval(dl_fcn, series{s}, varargin{:});
+        individual{s} = feval(dl_fcn, series{s}, toPass{s,:});
       end
     end
 
