@@ -3,7 +3,7 @@ function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, v
 
   %% Maybe open up parallel pool
   if parworkers
-    poolcheck = gcp('nocreate')
+    poolcheck = gcp('nocreate');
     if isempty(poolcheck)
       poolobj = parpool(min([parworkers length(series)]));
     else
@@ -41,6 +41,7 @@ function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, v
     % single data matrix of possibly mixed frequency
     else
 
+      fprintf('Reshaping by vintage...\n')
       data = fred.reshapeByVint(individual);
     end
 

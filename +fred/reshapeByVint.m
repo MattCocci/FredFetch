@@ -10,7 +10,6 @@ function [dataByVint] = reshapeByVint(individualBySeries)
 % datasets* in each element of the returned structure array, which is
 % maybe more useful than one series per element.
 
-
   opt = fred.GlobalOptions();
 
   % Make sure the individualbyseries argument is an array structure; if
@@ -26,54 +25,51 @@ function [dataByVint] = reshapeByVint(individualBySeries)
   vints = unique([dataBySeries.realtime]);
   Nvint = length(vints);
 
+
   % Loop over vintages and build up the dataByVint array struct
   for v = 1:Nvint
 
     % Current vintage date
     vint = vints(v);
+    toStore.realtime = vint;
+    fprintf('Creating vintage dataset for %s...\n', datestr(vint));
+
+    % Observation dates
+    toStore.date = sort(unique(vertcat(dataBySeries.date)));
 
     % Add info about the series
     carry_over = {'info', 'series', 'frequency', 'units'};
     for n = 1:length(carry_over)
-      dataByVint(v).(carry_over{n}) = {dataBySeries.(carry_over{n})}';
+      toStore.(carry_over{n}) = {dataBySeries.(carry_over{n})}';
     end
 
-    % Fill in pseudo across different series for this vintage
-    vintMatchInd = cell(Nseries,1);
-    dataByVint(v).pseudo = nan(Nseries,1);
+    % Fill in pseudo and data across different series for this vintage
+    toStore.pseudo = nan(Nseries,1);
+    toStore.value  = nan(length(toStore.date), Nseries);
     for n = 1:Nseries
 
       % For series n, find the index among its different vintage dates
-      % that matches vint; store it
-      vintMatchInd{n} = find(vint == dataBySeries(n).realtime);
+      % that matches vint
+      vintMatchInd = find(vint == dataBySeries(n).realtime);
 
-      % If that's not empty, store pseudo info
-      if ~isempty(vintMatchInd{n})
-        dataByVint(v).pseudo(n) = dataBySeries(n).pseudo(vintMatchInd{n});
-      end
-    end
+      if ~isempty(vintMatchInd)
+        % Store pseudo info
+        toStore.pseudo(n) = dataBySeries(n).pseudo(vintMatchInd);
 
-    % Add the vintage date
-    dataByVint(v).realtime = vint;
-
-    % Fill in the obs dates
-    dataByVint(v).date = sort(unique(vertcat(dataBySeries.date)));
-
-    % Fill in the data, and data, accounting for mixed frequency
-    dataByVint(v).value = nan(length(dataByVint(v).date), Nseries);
-    for n = 1:Nseries
-      if ~isempty(vintMatchInd{n})
-        insert = arrayfun(@(t) find(dataByVint(v).date==t), dataBySeries(n).date);
-        dataByVint(v).value(insert,n) = dataBySeries(n).value(:,vintMatchInd{n});
+        % Fill in the data, and data, accounting for mixed frequency
+        insert = arrayfun(@(t) find(toStore.date==t), dataBySeries(n).date);
+        toStore.value(insert,n) = dataBySeries(n).value(:,vintMatchInd);
       end
     end
 
     % Trim the leading and trailing nans
     if opt.trimLeadTrailNaN
-      [dataByVint(v).value, rem] = fred.RemLeadTrailNaN_(dataByVint(v).value, 'all');
-      dataByVint(v).date = dataByVint(v).date(~rem);
+      [toStore.value, rem] = fred.RemLeadTrailNaN_(toStore.value, 'all');
+      toStore.date = toStore.date(~rem);
     end
 
+    toStore = orderfields(toStore, [carry_over, {'pseudo', 'realtime', 'date', 'value'}]);
+    dataByVint(v) = toStore;
   end
 
 end
