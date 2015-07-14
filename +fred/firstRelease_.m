@@ -8,6 +8,9 @@ function [rlsdata] = firstRelease_(series, varargin)
     if ~isempty(units_idx)
       toPass = varargin([1:units_idx-1 units_idx+2:end]);
       units  = varargin{units_idx+1};
+      if iscell(units)
+        units = units{:};
+      end
     else
       toPass = varargin;
       units  = 'lin';
