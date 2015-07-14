@@ -5,9 +5,11 @@ function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, v
   if parworkers
     poolcheck = gcp('nocreate');
     if isempty(poolcheck)
-      poolobj = parpool(min([parworkers length(series)]));
+      poolobj  = parpool(min([parworkers length(series)]));
+      poolkill = 1;
     else
-      poolobj = poolcheck;
+      poolobj  = poolcheck;
+      poolkill = 0;
     end
   end
 
@@ -55,7 +57,7 @@ function [data] = multipleSeries_(toDatasetByVint, parworkers, dl_fcn, series, v
 
 
   %% Shut down parpool
-  if parworkers
+  if parworkers && poolkill
     delete(poolobj);
   end
 
