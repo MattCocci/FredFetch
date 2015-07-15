@@ -49,7 +49,7 @@ function [rlsdata] = firstRelease_(series, varargin)
     [Nobs,Nvint] = size(vintdata.value);
     rlsdata.released = nan(Nobs,1);
     rlsdata.value    = nan(Nobs,1);
-    keepRow  = zeros(Nobs,1);
+    keepRow = zeros(Nobs,1);
     for t = 1:Nobs
       col = find(~isnan(vintdata.value(t,:)),1);
       if ~isempty(col)
@@ -62,6 +62,21 @@ function [rlsdata] = firstRelease_(series, varargin)
     rlsdata.date     = rlsdata.date(keepRow);
     rlsdata.value    = rlsdata.value(keepRow);
     rlsdata.released = rlsdata.released(keepRow);
+
+  %% Store revised final too
+
+    % Grab the latest
+    latest = fred.latest(series, 'units', units);
+
+    % For each obs, store the revised final
+    Nobs = length(rlsdata.date);
+    rlsdata.latest = nan(Nobs,1);
+    for t = 1:Nobs
+      indInLatest = find(rlsdata.date(t) == latest.date);
+      if ~isempty(indInLatest)
+        rlsdata.latest(t) = latest.value(indInLatest);
+      end
+    end
 
 end
 
