@@ -49,12 +49,14 @@ function [rlsdata] = firstRelease_(series, varargin)
     [Nobs,Nvint] = size(vintdata.value);
     rlsdata.released = nan(Nobs,1);
     rlsdata.value    = nan(Nobs,1);
-    keepRow  = zeros(Nobs,1);
+    rlsdata.latest   = nan(Nobs,1);
+    keepRow = zeros(Nobs,1);
     for t = 1:Nobs
-      col = find(~isnan(vintdata.value(t,:)),1);
-      if ~isempty(col)
-        rlsdata.value(t)    = vintdata.value(t,col);
-        rlsdata.released(t) = vintdata.realtime(col);
+      first = find(~isnan(vintdata.value(t,:)),1); % First non-nan entry in row t
+      if ~isempty(first)
+        rlsdata.value(t)    = vintdata.value(t,first);
+        rlsdata.latest(t)   = vintdata.value(t,end);
+        rlsdata.released(t) = vintdata.realtime(first);
         keepRow(t)  = 1;
       end
     end
