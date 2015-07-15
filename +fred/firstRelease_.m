@@ -63,6 +63,7 @@ function [rlsdata] = firstRelease_(series, varargin)
     keepRow = find(keepRow);
     rlsdata.date     = rlsdata.date(keepRow);
     rlsdata.value    = rlsdata.value(keepRow);
+    rlsdata.latest   = rlsdata.latest(keepRow);
     rlsdata.released = rlsdata.released(keepRow);
 
 end
