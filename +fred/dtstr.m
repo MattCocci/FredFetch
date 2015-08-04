@@ -1,4 +1,8 @@
-function [outdate] = dtstr(indate)
+function [outdate] = dtstr(indate, forceCell)
+
+  if ~exist('forceCell', 'var')
+    forceCell = 0;
+  end
 
   fred_fmt = 'yyyy-mm-dd';
 
@@ -8,7 +12,11 @@ function [outdate] = dtstr(indate)
       outdate = outdate{1};
     end
   else
-    outdate = indate;
+    outdate = datestr(indate, fred_fmt);
+  end
+
+  if ischar(outdate) && forceCell
+    outdate = {outdate};
   end
 
 end
