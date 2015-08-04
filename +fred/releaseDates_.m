@@ -1,33 +1,23 @@
-function [returned] = releaseDates_(series)
+function [returned] = releaseDates_(input)
+% [returned] = releaseDates_(series) will return release dates for the
+% given series.
+%
+% [returned] = releaseDates_(releaseNumber) will return dates for the
+% given Fred release number.
 
 
   %% Get the release ID for the given series
 
-    opt = fred.GlobalOptions();
-    releaseURL = sprintf([...
-            'https://api.stlouisfed.org/fred/series/release?' ...
-            'series_id=%s' ...
-            '&api_key=%s' ...
-            '&realtime_start=1776-07-04',...
-            '&realtime_end=9999-12-31',...
-            '&file_type=json'],...
-            series, ...
-            opt.api);
-
-    % Download
-    fromFred = fred.ReadFredURL_(releaseURL, 1, opt.max_attempt);
-
-    release_id = unique(cellfun(@(d) d.id, fromFred.releases));;
-
-    % Make sure there's only one release ID for that series (seems like
-    % there should be, but we check for that just in case)
-    if length(release_id) > 1
-      error(sprintf('Multiple release IDs for series %s', series))
+    % It's a series name; get the release id number
+    if ischar(input)
+      release_id = fred.releaseID_(input);
+    else
+      release_id = input;
     end
-
 
   %% Download the release dates for that release ID
 
+    opt = fred.GlobalOptions();
     datesURL = sprintf([...
             'https://api.stlouisfed.org/fred/release/dates?' ...
             'release_id=%d' ...
@@ -39,9 +29,8 @@ function [returned] = releaseDates_(series)
     fromFred = fred.ReadFredURL_(datesURL, 1, opt.max_attempt);
     fromFred = [fromFred.release_dates{:}];
 
-    returned.series     = series;
+
     returned.release_id = release_id;
     returned.date       = fred.dtnum({fromFred.date}, 1)';
-
 
 end
