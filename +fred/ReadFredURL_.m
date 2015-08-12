@@ -11,7 +11,7 @@
 % - Return either the error message or the URL contents (which are json)
 %   in a struct
 %
-function [returned, success] = ReadFredURL(url, json, max_attempt)
+function [returned, success] = ReadFredURL_(url, json, max_attempt)
 
   %% Get max attempt if not set
   if ~exist('max_attempt', 'var')
