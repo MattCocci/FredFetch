@@ -1,4 +1,4 @@
-function [release_id] = releaseID_(series)
+function [returned] = releaseID_(series, parworkers)
 % [release_id] = fred.releaseID_(series) will return the FRED release ID
 % number for a given series.
 
@@ -24,5 +24,10 @@ function [release_id] = releaseID_(series)
   if length(release_id) > 1
     error(sprintf('Multiple release IDs for series %s', series))
   end
+
+  returned.series       = series;
+  returned.release_id   = release_id;
+  returned.release_name = fromFred.releases{end}.name;
+  returned.release_link = fromFred.releases{end}.link;
 
 end
