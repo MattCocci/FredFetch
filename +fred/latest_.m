@@ -45,7 +45,7 @@ function [data] = latest_(series)
 
 
   %% Parse the data
-  date_value = textscan(data_str, '%s\t%f');
+  date_value = textscan(data_str, '%s\t%s');
 
 
   %% Store and return
@@ -56,7 +56,7 @@ function [data] = latest_(series)
   data.pseudo    = NaN;
   data.realtime  = fred.dtnum(datestr(date(), 'yyyy-mm-dd'), 1);
   data.date      = fred.dtnum(date_value{1}, 1);
-  data.value     = date_value{2};
+  data.value     = str2double(date_value{2});
 
 
 end
